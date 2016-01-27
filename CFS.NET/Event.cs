@@ -2,16 +2,18 @@
 
 namespace CFS.Net
 {
-    public class ClientLoginEventArgs : EventArgs
+    public class ClientConnectEventArgs : EventArgs
     {
-        public string Message { get; private set; }        
+        public string Message { get; private set; }
+        public ICFSession Session { get; private set; }
 
-        public ClientLoginEventArgs(string str)
+        public ClientConnectEventArgs(string message, ICFSession se)
         {
-            this.Message = str;            
+            this.Message = message;
+            this.Session = se;
         }
-    }
- 
+    } 
+
     public class DisconnectEventArgs : EventArgs
     {
         public string SessonId { get; private set; }
@@ -19,6 +21,16 @@ namespace CFS.Net
         public DisconnectEventArgs(string ssid)
         {
             this.SessonId = ssid;
+        }
+    }
+
+    public class ClientLoginEventArgs : EventArgs
+    {
+        public string Message { get; private set; }        
+
+        public ClientLoginEventArgs(string str)
+        {
+            this.Message = str;            
         }
     }
 
@@ -30,17 +42,7 @@ namespace CFS.Net
         {            
             this.ID = id;
         }
-    }
-
-    public class ClientCloseEventArgs : EventArgs
-    {
-        public string Message { get; private set; }
-    
-        public ClientCloseEventArgs(string str)
-        {
-            this.Message = str;             
-        }
-    }
+    } 
     
     public class ErrorEventArgs : EventArgs
     {
@@ -69,18 +71,6 @@ namespace CFS.Net
         public StopEventArgs(string message)
         {
             this.Message = message;
-        }
-    }
-
-    public class ConnectEventArgs : EventArgs
-    {
-        public string Message { get; private set; }
-        public ISession Session { get; private set; }
-
-        public ConnectEventArgs(string message, ISession se)
-        {
-            this.Message = message;
-            this.Session = se;
         }
     } 
 }

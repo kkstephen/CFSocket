@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace CFS.Net
 {
-    public abstract class Server : IDisposable
+    public abstract class CFServer : IDisposable
     {
         public delegate void OnServerError(object sender, ErrorEventArgs e);
         public event OnServerError ServerError;
@@ -19,7 +19,7 @@ namespace CFS.Net
         public delegate void OnStop(object sender, StopEventArgs e);
         public event OnStop OnServerStop;
 
-        public delegate void OnConnectionAccept(object sender, ConnectEventArgs e);
+        public delegate void OnConnectionAccept(object sender, ClientConnectEventArgs e);
         public event OnConnectionAccept OnConnect;
  
         public delegate void OnClientDisconnect(object sender, DisconnectEventArgs e);
@@ -31,8 +31,8 @@ namespace CFS.Net
         private TcpListener m_listener;
         private UdpClient m_pushClient;
 
-        private Dictionary<string, Session> m_sessions;
-        public Dictionary<string, Session> Sessions
+        private Dictionary<string, ICFSession> m_sessions;
+        public Dictionary<string, ICFSession> Sessions
         {
             get
             {
@@ -60,15 +60,15 @@ namespace CFS.Net
 
         private static readonly object _object = new object();
 
-        public Server(string host, int port, int status)
+        public CFServer(string host, int port, int status_port)
         {
             Port = port;
             Host = host;
-            Status = status;
+            Status = status_port;
 
             this.m_stop = true;
        
-            this.m_sessions = new Dictionary<string, Session>();
+            this.m_sessions = new Dictionary<string, ICFSession>();
 
             IPEndPoint svrIP = new IPEndPoint(IPAddress.Parse(Host), Port);
 
@@ -167,7 +167,7 @@ namespace CFS.Net
         {
             lock (this.m_sessions)
             {
-                foreach (Session session in this.m_sessions.Values)
+                foreach (ICFSession session in this.m_sessions.Values)
                 {
                     if (this.m_stop)
                         break;
@@ -247,7 +247,7 @@ namespace CFS.Net
             }
         }
 
-        protected void onConnectServer(object sender, ConnectEventArgs e)
+        protected void onConnectServer(object sender, ClientConnectEventArgs e)
         {
             ThreadPool.QueueUserWorkItem(
                 delegate

@@ -4,7 +4,7 @@ using System.Net.Sockets;
 
 namespace CFS.Net
 {
-    public abstract class Session : ISession, ISocket
+    public abstract class CFSession : ICFSession, ICFSocket
     {          
         public delegate void OnError(object sender, ErrorEventArgs e);
         public event OnError OnServerError;
@@ -24,7 +24,7 @@ namespace CFS.Net
 
         public bool Encryption { get; set; }
 
-        public ICipher Cipher { get; set; }
+        public ICFCrypto Cipher { get; set; }
 
         public IPEndPoint PushHost { get; set; } 
          
@@ -42,7 +42,7 @@ namespace CFS.Net
         
         public IPEndPoint RemoteHost { get; private set; }
          
-        public Session(TcpClient conn)
+        public CFSession(TcpClient conn)
         {
             this._conn = conn;
             this.Stream = new CFStream(conn.GetStream());

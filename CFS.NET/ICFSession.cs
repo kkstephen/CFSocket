@@ -2,9 +2,11 @@
 
 namespace CFS.Net
 {
-    public interface ISession
+    public interface ICFSession
     {
         IPEndPoint RemoteHost { get; }
+        IPEndPoint PushHost { get; }
+        bool IsAlive { get; }
         void Begin();
         void Start();
         void Stop();

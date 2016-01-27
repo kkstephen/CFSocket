@@ -36,13 +36,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Event.cs" />
-    <Compile Include="ICrypto.cs" />
-    <Compile Include="ISession.cs" />
-    <Compile Include="ISocket.cs" />
-    <Compile Include="Server.cs" />
-    <Compile Include="Session.cs" />
-    <Compile Include="Stream.cs" />
-    <Compile Include="IMessage.cs" />
+    <Compile Include="ICFCrypto.cs" />
+    <Compile Include="ICFSession.cs" />
+    <Compile Include="ICFSocket.cs" />
+    <Compile Include="CFServer.cs" />
+    <Compile Include="CFSession.cs" />
+    <Compile Include="CFStream.cs" />
+    <Compile Include="ICFMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

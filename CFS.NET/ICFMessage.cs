@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CFS.Net
 {
-    public interface IMessage
+    public interface ICFMessage
     {
         void Parse(string str);
     }
