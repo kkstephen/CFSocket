@@ -1,0 +1,5 @@
+D:\Github\CSF\CSF.NET\bin\Debug\CFSocket.dll
+D:\Github\CSF\CSF.NET\bin\Debug\CFSocket.pdb
+D:\Github\CSF\CSF.NET\obj\Debug\CFS.NET.csprojResolveAssemblyReference.cache
+D:\Github\CSF\CSF.NET\obj\Debug\CFSocket.dll
+D:\Github\CSF\CSF.NET\obj\Debug\CFSocket.pdb

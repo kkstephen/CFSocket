@@ -1,0 +1,9 @@
+D:\Github\CSF\CSF.NET\CSF.NET\bin\Debug\CSF.NET.dll
+D:\Github\CSF\CSF.NET\CSF.NET\bin\Debug\CSF.NET.pdb
+D:\Github\CSF\CSF.NET\CSF.NET\obj\Debug\CSF.NET.csprojResolveAssemblyReference.cache
+D:\Github\CSF\CSF.NET\CSF.NET\obj\Debug\CSF.NET.dll
+D:\Github\CSF\CSF.NET\CSF.NET\obj\Debug\CSF.NET.pdb
+D:\Github\CSF\CSF.NET\obj\Debug\CSF.NET.dll
+D:\Github\CSF\CSF.NET\obj\Debug\CSF.NET.pdb
+D:\Github\CSF\CSF.NET\bin\Debug\CSF.NET.dll
+D:\Github\CSF\CSF.NET\bin\Debug\CSF.NET.pdb
