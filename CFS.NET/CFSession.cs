@@ -6,10 +6,10 @@ namespace CFS.Net
 {
     public abstract class CFSession : ICFSession, ICFSocket
     {          
-        public delegate void OnError(object sender, ErrorEventArgs e);
+        public delegate void OnError(object sender, CFErrorEventArgs e);
         public event OnError OnServerError;
 
-        public delegate void OnSessionError(object sender, ErrorEventArgs e);
+        public delegate void OnSessionError(object sender, CFErrorEventArgs e);
         public event OnSessionError OnClientError;
 
         public delegate void OnClose(object sender, SessionCloseEventArgs e);
@@ -101,7 +101,7 @@ namespace CFS.Net
         } 
 
         #region Event 
-        protected void onServerError(object sender, ErrorEventArgs e)
+        protected void onServerError(object sender, CFErrorEventArgs e)
         {
             if (OnServerError != null)
             {
@@ -109,7 +109,7 @@ namespace CFS.Net
             }
         }
 
-        protected void onSessionError(object sender, ErrorEventArgs e)
+        protected void onSessionError(object sender, CFErrorEventArgs e)
         {
             if (OnClientError != null)
             {

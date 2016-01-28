@@ -10,7 +10,7 @@ namespace CFS.Net
 {
     public abstract class CFServer : IDisposable
     {
-        public delegate void OnServerError(object sender, ErrorEventArgs e);
+        public delegate void OnServerError(object sender, CFErrorEventArgs e);
         public event OnServerError ServerError;
 
         public delegate void OnStart(object sender, StartEventArgs e);
@@ -25,7 +25,7 @@ namespace CFS.Net
         public delegate void OnClientDisconnect(object sender, DisconnectEventArgs e);
         public event OnClientDisconnect OnDisconnect;
 
-        public delegate void OnClientError(object sender, ErrorEventArgs e);
+        public delegate void OnClientError(object sender, CFErrorEventArgs e);
         public event OnClientError ClientError;
 
         private TcpListener m_listener;
@@ -220,7 +220,7 @@ namespace CFS.Net
 
         #region server
 
-        protected void serverError(object sender, ErrorEventArgs e)
+        protected void serverError(object sender, CFErrorEventArgs e)
         {
             if (ServerError != null)
             {
@@ -276,7 +276,7 @@ namespace CFS.Net
             }
         } 
 
-        protected void clientError(object sender, ErrorEventArgs e)
+        protected void clientError(object sender, CFErrorEventArgs e)
         {
             if (ClientError != null)
             {

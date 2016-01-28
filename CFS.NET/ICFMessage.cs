@@ -8,6 +8,7 @@ namespace CFS.Net
 {
     public interface ICFMessage
     {
-        void Parse(string str);
+        string Command { get; }
+        string Data { get; }
     }
 }
