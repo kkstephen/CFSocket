@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 namespace CFS.Net
 {
     public interface ICFMessage
-    {
-        string Command { get; }
+    {        
         string Data { get; }
     }
 }
