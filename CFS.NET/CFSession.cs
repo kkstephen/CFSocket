@@ -59,22 +59,25 @@ namespace CFS.Net
             this.m_Stop = false;
         }
   
-        public virtual void Stop()
+        public virtual void End()
         {
             this.m_Stop = true;
         }
          
         public virtual void Close()
         {
-            if (!this.m_Stop)
+            this.m_Stop = true;
+
+            if (this.Stream != null)
             {
-                this.m_Stop = true;
-
-                this._conn.Close();
-                this._conn = null;
-
                 this.Stream.Close();
                 this.Stream = null;
+            }
+
+            if (this._conn != null)
+            {
+                this._conn.Close();
+                this._conn = null;
             } 
         }
 

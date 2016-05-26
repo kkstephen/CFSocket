@@ -32,10 +32,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Event.cs" />
+    <Compile Include="CFEvent.cs" />
     <Compile Include="ICFCrypto.cs" />
     <Compile Include="ICFSession.cs" />
     <Compile Include="ICFSocket.cs" />

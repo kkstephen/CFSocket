@@ -35,16 +35,7 @@ namespace CFS.Net
             this._writer = new StreamWriter(this._netStream);
 
             this._isAvabile = true;
-        }
-
-        ~CFStream()
-        {
-            this.Dispose(false);
-
-            this._netStream = null;
-            this._reader = null;
-            this._writer = null;
-        }
+        }         
 
         protected virtual void Dispose(bool disposing)
         {
@@ -54,18 +45,18 @@ namespace CFS.Net
                 {
                     // dispose managed resources
                     if (this._netStream != null)
-                    {                        
-                        this._netStream.Dispose();
+                    {
+                        this._netStream.Dispose();                        
                     }
 
                     if (this._reader != null)
                     {                        
-                        this._reader.Dispose();
+                        this._reader.Dispose();                        
                     }
 
                     if (this._writer != null)
                     {                        
-                        this._writer.Dispose();
+                        this._writer.Dispose();                         
                     }
                 }
 
@@ -82,9 +73,14 @@ namespace CFS.Net
         
         public void Close()
         {
-            this._netStream.Close();
-            this._reader.Close();
-            this._writer.Close();
+            if (this._netStream != null)
+                this._netStream.Close();
+
+            if (this._reader != null)
+                this._reader.Close();
+
+            if (this._writer != null)
+                this._writer.Close();
 
             this._isAvabile = false;
         }        

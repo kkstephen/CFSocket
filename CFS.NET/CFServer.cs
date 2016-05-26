@@ -117,7 +117,7 @@ namespace CFS.Net
 
         protected async void Run()
         {
-            this.onServerStart(this, new StartEventArgs("Server start ..."));
+            this.onServerStart(this, new StartEventArgs("Server ready."));
 
             while (true)
             {
