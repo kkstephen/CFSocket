@@ -30,14 +30,10 @@ namespace CFS.Net
 
         private TcpListener m_listener;
         private UdpClient m_pushClient;
-
-        private Dictionary<string, ICFSession> m_sessions;
+                
         public Dictionary<string, ICFSession> Sessions
         {
-            get
-            {
-                return this.m_sessions;
-            }
+            get; private set;            
         } 
 
         public Thread serverThread;
@@ -68,7 +64,7 @@ namespace CFS.Net
 
             this.m_stop = true;
        
-            this.m_sessions = new Dictionary<string, ICFSession>();
+            this.Sessions = new Dictionary<string, ICFSession>();
 
             IPEndPoint svrIP = new IPEndPoint(IPAddress.Parse(Host), Port);
 
@@ -90,14 +86,20 @@ namespace CFS.Net
                     if (this.m_listener != null)
                     {
                         this.m_listener.Server.Dispose();
+                        this.m_listener = null;
                     }
 
                     if (this.m_pushClient.Client != null)
                     {                        
                         this.m_pushClient.Client.Dispose();
+                        this.m_pushClient = null;
                     }
                      
-                    this.m_sessions.Clear();                    
+                    if (this.Sessions != null)
+                    {
+                        this.Sessions.Clear();
+                        this.Sessions = null;
+                    }                          
                 }
 
                 // Free your own state (unmanaged objects).
@@ -127,7 +129,7 @@ namespace CFS.Net
 
                     if (!m_stop)
                     {
-                        lock (this.m_sessions)
+                        lock (this.Sessions)
                         {
                             this.Process(client);                       
                         }
@@ -151,12 +153,12 @@ namespace CFS.Net
             this.m_stop = true;     
             
             this.m_listener.Stop();
-            this.m_pushClient.Close();
+            this.m_pushClient.Close(); 
         }
    
         public void Initialize()
         {
-            this.m_sessions.Clear();
+            this.Sessions.Clear();
             
             this.m_listener.Start();
 
@@ -165,9 +167,9 @@ namespace CFS.Net
 
         public void Push(string message)
         {
-            lock (this.m_sessions)
+            lock (this.Sessions)
             {
-                foreach (ICFSession session in this.m_sessions.Values)
+                foreach (ICFSession session in this.Sessions.Values)
                 {
                     if (this.m_stop)
                         break;
@@ -197,9 +199,9 @@ namespace CFS.Net
 
         public void Clear()
         {
-            lock (this.m_sessions)
+            lock (this.Sessions)
             {
-                foreach (var session in this.m_sessions.Values)
+                foreach (var session in this.Sessions.Values)
                 {
                     if (session.IsAlive)
                         session.Close();
@@ -209,9 +211,9 @@ namespace CFS.Net
 
         public void Abort(string sessionId)
         {             
-            if (this.m_sessions.ContainsKey(sessionId))
+            if (this.Sessions.ContainsKey(sessionId))
             {
-                var session = this.m_sessions[sessionId];
+                var session = this.Sessions[sessionId];
 
                 if (session.IsAlive)
                     session.Close(); 
@@ -265,9 +267,9 @@ namespace CFS.Net
         
         protected void clientDisconnect(object sender, DisconnectEventArgs e)
         {
-            lock (this.m_sessions)
+            lock (this.Sessions)
             {
-                this.m_sessions.Remove(e.SessonId);
+                this.Sessions.Remove(e.SessonId);
             }
 
             if (OnDisconnect != null)
@@ -292,7 +294,7 @@ namespace CFS.Net
         {
             if (!this.m_stop)
             {
-                var session = this.m_sessions[e.ID];
+                var session = this.Sessions[e.ID];
 
                 session.Close();
             } 

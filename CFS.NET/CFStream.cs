@@ -46,17 +46,20 @@ namespace CFS.Net
                     // dispose managed resources
                     if (this._netStream != null)
                     {
-                        this._netStream.Dispose();                        
+                        this._netStream.Dispose();
+                        this._netStream = null;
                     }
 
                     if (this._reader != null)
                     {                        
-                        this._reader.Dispose();                        
+                        this._reader.Dispose();
+                        this._reader = null;                     
                     }
 
                     if (this._writer != null)
                     {                        
-                        this._writer.Dispose();                         
+                        this._writer.Dispose();
+                        this._writer = null;                     
                     }
                 }
 
@@ -73,14 +76,9 @@ namespace CFS.Net
         
         public void Close()
         {
-            if (this._netStream != null)
-                this._netStream.Close();
-
-            if (this._reader != null)
-                this._reader.Close();
-
-            if (this._writer != null)
-                this._writer.Close();
+            this._netStream.Close();
+            this._reader.Close();
+            this._writer.Close();
 
             this._isAvabile = false;
         }        

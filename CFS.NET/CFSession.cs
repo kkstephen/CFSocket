@@ -15,17 +15,11 @@ namespace CFS.Net
         public delegate void OnClose(object sender, SessionCloseEventArgs e);
         public event OnClose OnSessionClose;
 
-        private TcpClient _conn; 
-
-        public CFStream Stream
-        {
-            get; private set;             
-        }
+        protected TcpClient Connection;
+        protected CFStream Stream;       
 
         public bool Encryption { get; set; }
-
         public ICFCrypto Cipher { get; set; }
-
         public IPEndPoint PushHost { get; set; } 
          
         public string ID { get; set; }
@@ -44,12 +38,12 @@ namespace CFS.Net
          
         public CFSession(TcpClient conn)
         {
-            this._conn = conn;
+            this.Connection = conn;
             this.Stream = new CFStream(conn.GetStream());
          
             this.m_Stop = true;
           
-            this.RemoteHost = (IPEndPoint)this._conn.Client.RemoteEndPoint;
+            this.RemoteHost = (IPEndPoint)this.Connection.Client.RemoteEndPoint;
         }
 
         public abstract void Begin();
@@ -67,18 +61,9 @@ namespace CFS.Net
         public virtual void Close()
         {
             this.m_Stop = true;
-
-            if (this.Stream != null)
-            {
-                this.Stream.Close();
-                this.Stream = null;
-            }
-
-            if (this._conn != null)
-            {
-                this._conn.Close();
-                this._conn = null;
-            } 
+         
+            this.Stream.Close();           
+            this.Connection.Close();             
         }
 
         public virtual string Receive()
