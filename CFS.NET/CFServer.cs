@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Net;
@@ -31,7 +32,7 @@ namespace CFS.Net
         private TcpListener m_listener;
         private UdpClient m_pushClient;
                 
-        public Dictionary<string, ICFSession> Sessions
+        public ConcurrentDictionary<string, ICFSession> Sessions
         {
             get; private set;            
         } 
@@ -64,7 +65,7 @@ namespace CFS.Net
 
             this.m_stop = true;
        
-            this.Sessions = new Dictionary<string, ICFSession>();
+            this.Sessions = new ConcurrentDictionary<string, ICFSession>();
 
             IPEndPoint svrIP = new IPEndPoint(IPAddress.Parse(Host), Port);
 
@@ -119,7 +120,10 @@ namespace CFS.Net
 
         protected async void Run()
         {
-            this.onServerStart(this, new StartEventArgs("Server ready."));
+            if (OnServerStart != null)
+            {
+                OnServerStart(this, new StartEventArgs("Server ready"));
+            }         
 
             while (true)
             {
@@ -128,11 +132,8 @@ namespace CFS.Net
                     var client = await this.m_listener.AcceptTcpClientAsync();
 
                     if (!m_stop)
-                    {
-                        lock (this.Sessions)
-                        {
-                            this.Process(client);                       
-                        }
+                    { 
+                        this.Process(client);                                  
                     }
                     else
                     {
@@ -141,11 +142,16 @@ namespace CFS.Net
                 }
                 catch
                 {
+                    this.m_stop = true;
+
                     break;
                 }
             }
 
-            this.onServerStop(this, new StopEventArgs("Server stop."));
+            if (OnServerStop != null)
+            {
+                OnServerStop(this, new StopEventArgs("Server stop"));
+            }
         }
 
         public void Stop()
@@ -166,89 +172,39 @@ namespace CFS.Net
         }
 
         public void Push(string message)
-        {
-            lock (this.Sessions)
+        { 
+            foreach (ICFSession session in this.Sessions.Values)
             {
-                foreach (ICFSession session in this.Sessions.Values)
-                {
-                    if (this.m_stop)
-                        break;
-
-                    if (session.IsAlive && session.PushHost != null)
-                        this.m_pushClient.Send(Encoding.Default.GetBytes(message), message.Length, session.PushHost);
-                }
-            }                
-        }
-
-        public void Ping()
-        {
-            IPEndPoint remoteIP = new IPEndPoint(IPAddress.Any, 0);
-
-            while (!this.m_stop)
-            {
-                try
-                {
-                    byte[] data = this.m_pushClient.Receive(ref remoteIP);
-                }
-                catch
-                {
+                if (this.m_stop)
                     break;
-                }
-            }
+
+                if (session.IsAlive && session.PushHost != null)
+                    this.m_pushClient.Send(Encoding.Default.GetBytes(message), message.Length, session.PushHost);
+            }                             
         }
 
         public void Clear()
-        {
-            lock (this.Sessions)
+        { 
+            foreach (var session in this.Sessions.Values)
             {
-                foreach (var session in this.Sessions.Values)
-                {
-                    if (session.IsAlive)
-                        session.Close();
-                }
-            }     
+                if (session.IsAlive)
+                    session.Close();
+            }                  
         }
 
         public void Abort(string sessionId)
-        {             
-            if (this.Sessions.ContainsKey(sessionId))
-            {
-                var session = this.Sessions[sessionId];
+        {
+            ICFSession session = null;
 
+            if (this.Sessions.TryGetValue(sessionId, out session))
+            {
                 if (session.IsAlive)
-                    session.Close(); 
-            }             
+                    session.Close();
+            } 
         }
 
-        #region server
-
-        protected void serverError(object sender, CFErrorEventArgs e)
-        {
-            if (ServerError != null)
-            {
-                ServerError(sender, e);
-            }
-        }
-
-        protected void onServerStart(object sender, StartEventArgs e)
-        {
-            if (OnServerStart != null)
-            {
-                OnServerStart(sender, e);
-            }
-        }
-
-        protected void onServerStop(object sender, StopEventArgs e)
-        {
-            if (!this.m_stop)
-                this.m_stop = true; 
-
-            if (OnServerStop != null)
-            {
-                OnServerStop(sender, e);
-            }
-        }
-
+        #region server 
+ 
         protected void onConnectServer(object sender, ClientConnectEventArgs e)
         {
             ThreadPool.QueueUserWorkItem(
@@ -263,20 +219,15 @@ namespace CFS.Net
             {
                 OnConnect(sender, e);
             }
-        }     
-        
-        protected void clientDisconnect(object sender, DisconnectEventArgs e)
-        {
-            lock (this.Sessions)
-            {
-                this.Sessions.Remove(e.SessonId);
-            }
+        }  
 
+        protected void onDisconnectServer(object sender, DisconnectEventArgs e)
+        {
             if (OnDisconnect != null)
             {
                 OnDisconnect(sender, e);
             }
-        } 
+        }
 
         protected void clientError(object sender, CFErrorEventArgs e)
         {
@@ -286,23 +237,14 @@ namespace CFS.Net
             }
         }
 
-        #endregion
-
-        #region session
-
-        protected void sessionClose(object sender, SessionCloseEventArgs e)
+        protected void serverError(object sender, CFErrorEventArgs e)
         {
-            if (!this.m_stop)
+            if (ServerError != null)
             {
-                var session = this.Sessions[e.ID];
-
-                session.Close();
-            } 
-
-            DisconnectEventArgs d = new DisconnectEventArgs(e.ID);
-            this.clientDisconnect(sender, d);
+                ServerError(sender, e);
+            }
         }
 
-        #endregion
+        #endregion 
     }
 }

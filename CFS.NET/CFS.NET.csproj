@@ -35,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CFEvent.cs" />
+    <Compile Include="CFSocket.cs" />
     <Compile Include="ICFCrypto.cs" />
     <Compile Include="ICFSession.cs" />
     <Compile Include="ICFSocket.cs" />

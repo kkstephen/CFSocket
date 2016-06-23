@@ -9,6 +9,5 @@ D:\Github\CFSocket\CFS.NET\obj\Debug\CFSocket.dll
 D:\Github\CFSocket\CFS.NET\obj\Debug\CFSocket.pdb
 E:\Github\CFSocket\CFS.NET\bin\Debug\CFSocket.dll
 E:\Github\CFSocket\CFS.NET\bin\Debug\CFSocket.pdb
-E:\Github\CFSocket\CFS.NET\obj\Debug\CFS.NET.csprojResolveAssemblyReference.cache
 E:\Github\CFSocket\CFS.NET\obj\Debug\CFSocket.dll
 E:\Github\CFSocket\CFS.NET\obj\Debug\CFSocket.pdb

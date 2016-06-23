@@ -4,22 +4,16 @@ using System.Net.Sockets;
 
 namespace CFS.Net
 {
-    public abstract class CFSession : ICFSession, ICFSocket
+    public abstract class CFSession : CFSocket, ICFSession
     {          
         public delegate void OnError(object sender, CFErrorEventArgs e);
         public event OnError OnServerError;
 
         public delegate void OnSessionError(object sender, CFErrorEventArgs e);
-        public event OnSessionError OnClientError;
-
-        public delegate void OnClose(object sender, SessionCloseEventArgs e);
-        public event OnClose OnSessionClose;
+        public event OnSessionError OnClientError; 
 
         protected TcpClient Connection;
-        protected CFStream Stream;       
-
-        public bool Encryption { get; set; }
-        public ICFCrypto Cipher { get; set; }
+     
         public IPEndPoint PushHost { get; set; } 
          
         public string ID { get; set; }
@@ -60,32 +54,10 @@ namespace CFS.Net
          
         public virtual void Close()
         {
-            this.m_Stop = true;
+            this.End();
          
             this.Stream.Close();           
-            this.Connection.Close();             
-        }
-
-        public virtual string Receive()
-        {
-            string recv = this.Stream.Read();
-
-            if (Encryption)
-            {
-                return this.Cipher.Decrypt(recv);
-            }
-
-            return recv;
-        }
-
-        public virtual void Send(string data)
-        {
-            if (Encryption)
-            {
-                data = this.Cipher.Encrypt(data);
-            }
-
-            this.Stream.Write(data);
+            this.Connection.Close();
         } 
 
         #region Event 
@@ -103,15 +75,8 @@ namespace CFS.Net
             {
                 OnClientError(sender, e);
             }
-        } 
-
-        protected void onClientClose(object sender, SessionCloseEventArgs e)
-        {
-            if (OnSessionClose != null)
-            {
-                OnSessionClose(sender, e);
-            }
         }
+ 
         #endregion
     }
 }
