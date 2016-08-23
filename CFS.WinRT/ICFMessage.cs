@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CFS.Net
+namespace CFS.WinRT
 {
     public interface ICFMessage
     {        

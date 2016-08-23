@@ -30,7 +30,6 @@ namespace CFS.Net
         public event OnClientError ClientError;
 
         private TcpListener m_listener;
-        private UdpClient m_pushClient;
                 
         public ConcurrentDictionary<string, ICFSession> Sessions
         {
@@ -40,8 +39,9 @@ namespace CFS.Net
         public Thread serverThread;
 
         public string Host { get; set; }
-        public int Port { get; private set; }
-        public int Status { get; private set; }
+        public int Port { get; set; }
+        
+        private IPEndPoint svrIP;   
 
         private volatile bool m_stop;
 
@@ -57,26 +57,18 @@ namespace CFS.Net
 
         private static readonly object _object = new object();
 
-        public CFServer(string host, int port, int status_port)
+        public CFServer(string host, int port)
         {
             Port = port;
-            Host = host;
-            Status = status_port;
+            Host = host;      
 
             this.m_stop = true;
-       
-            this.Sessions = new ConcurrentDictionary<string, ICFSession>();
 
-            IPEndPoint svrIP = new IPEndPoint(IPAddress.Parse(Host), Port);
+            this.svrIP = new IPEndPoint(IPAddress.Parse(Host), Port); 
 
-            this.m_listener = new TcpListener(svrIP);
+            this.Sessions = new ConcurrentDictionary<string, ICFSession>(); 
+        } 
 
-            IPEndPoint statusIP = new IPEndPoint(IPAddress.Parse(Host), Status);
-
-            this.m_pushClient = new UdpClient(statusIP);
-            this.m_pushClient.Ttl = 64;
-        }
-  
         protected virtual void Dispose(bool disposing)
         {
             if (!disposed)
@@ -89,13 +81,7 @@ namespace CFS.Net
                         this.m_listener.Server.Dispose();
                         this.m_listener = null;
                     }
-
-                    if (this.m_pushClient.Client != null)
-                    {                        
-                        this.m_pushClient.Client.Dispose();
-                        this.m_pushClient = null;
-                    }
-                     
+ 
                     if (this.Sessions != null)
                     {
                         this.Sessions.Clear();
@@ -114,11 +100,29 @@ namespace CFS.Net
             GC.SuppressFinalize(this);
         }
 
-        public abstract void Start();
+        public void Start()
+        {
+            this.Sessions.Clear();
+
+            this.m_stop = false;
+                        
+            try
+            {
+                this.m_listener = new TcpListener(this.svrIP);
+
+                this.m_listener.Start();
+                
+                this.Run();
+            }
+            catch(Exception ex)
+            {
+                this.serverError(this, new CFErrorEventArgs(ex.Message));
+            }
+        }
         
         public abstract void Process(TcpClient client);
 
-        protected async void Run()
+        protected virtual async void Run()
         {
             if (OnServerStart != null)
             {
@@ -140,7 +144,7 @@ namespace CFS.Net
                         client.Close();
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
                     this.m_stop = true;
 
@@ -156,33 +160,15 @@ namespace CFS.Net
 
         public void Stop()
         { 
-            this.m_stop = true;     
-            
-            this.m_listener.Stop();
-            this.m_pushClient.Close(); 
-        }
-   
-        public void Initialize()
-        {
-            this.Sessions.Clear();
-            
-            this.m_listener.Start();
+            this.m_stop = true;
 
-            this.m_stop = false;
-        }
-
-        public void Push(string message)
-        { 
-            foreach (ICFSession session in this.Sessions.Values)
+            if (this.m_listener != null)
             {
-                if (this.m_stop)
-                    break;
-
-                if (session.IsAlive && session.PushHost != null)
-                    this.m_pushClient.Send(Encoding.Default.GetBytes(message), message.Length, session.PushHost);
-            }                             
+                this.m_listener.Stop();
+                this.m_listener = null;
+            }
         }
-
+    
         public void Clear()
         { 
             foreach (var session in this.Sessions.Values)

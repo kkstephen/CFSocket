@@ -1,11 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net;
 using System.Net.Sockets;
- 
+
 namespace CFS.Net
 {
     public class CFStream : IDisposable
@@ -93,9 +89,13 @@ namespace CFS.Net
                 {
                     return this._data;                     
                 }
+                else
+                {
+                    this._isAvabile = false;
+                }
             }
-
-            throw new IOException("Network receive data error.");
+            
+            throw new IOException("Network receive data error.");              
         }
 
         public void Write(string data)
@@ -107,8 +107,10 @@ namespace CFS.Net
             }
             else
             {
-                throw new IOException("Network send data error");
-            }
+                this._isAvabile = false;
+
+                throw new IOException("Network send data error");               
+            } 
         }
     }
 }
