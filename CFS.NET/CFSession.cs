@@ -4,7 +4,7 @@ using System.Net.Sockets;
 
 namespace CFS.Net
 {
-    public abstract class CFSession : CFSocket, ICFSession, IDisposable
+    public abstract class CFSession : CFSocket, ICFSession
     {          
         public delegate void OnError(object sender, CFErrorEventArgs e);
         public event OnError OnServerError;
@@ -39,16 +39,14 @@ namespace CFS.Net
                 {
                     // dispose managed resources
                     if (this.Stream != null)
-                    {
-                        this.Stream.Close();
+                    { 
                         this.Stream.Dispose();
 
                         this.Stream = null;
                     }
 
                     if (this.Connection != null)
-                    {
-                        this.Connection.Close();
+                    { 
                         this.Connection.Dispose();
 
                         this.Connection = null;
@@ -89,10 +87,9 @@ namespace CFS.Net
         }
          
         public virtual void Close()
-        { 
-            this.End();
-
-            this.Dispose();
+        {           
+            this.Stream.Close();
+            this.Connection.Close();
         }
  
         #region Event 

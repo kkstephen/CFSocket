@@ -1,8 +1,9 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 
 namespace CFS.Net
 {
-    public interface ICFSession
+    public interface ICFSession : IDisposable
      { 
          IPEndPoint RemoteHost { get; } 
          IPEndPoint PushHost { get; } 
