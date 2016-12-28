@@ -4,7 +4,7 @@ using System.Net.Sockets;
 
 namespace CFS.Net
 {
-    public abstract class CFSession : CFSocket, ICFSession
+    public abstract class CFSession : CFSocket, ICFSession, IDisposable
     {          
         public delegate void OnError(object sender, CFErrorEventArgs e);
         public event OnError OnServerError;
@@ -27,9 +27,45 @@ namespace CFS.Net
         }
 
         private bool m_Stop;
-        
+        private bool disposed = false;
+
         public IPEndPoint RemoteHost { get; private set; }
-         
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.disposed)
+            {
+                if (disposing)
+                {
+                    // dispose managed resources
+                    if (this.Stream != null)
+                    {
+                        this.Stream.Close();
+                        this.Stream.Dispose();
+
+                        this.Stream = null;
+                    }
+
+                    if (this.Connection != null)
+                    {
+                        this.Connection.Close();
+                        this.Connection.Dispose();
+
+                        this.Connection = null;
+                    } 
+                }
+
+                this.disposed = true;
+            }
+            // free native resources
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         public CFSession(TcpClient conn)
         {
             this.Connection = conn;
@@ -39,7 +75,7 @@ namespace CFS.Net
           
             this.RemoteHost = (IPEndPoint)this.Connection.Client.RemoteEndPoint;
         }
-
+         
         public abstract void Begin();
 
         public virtual void Start()
@@ -53,13 +89,12 @@ namespace CFS.Net
         }
          
         public virtual void Close()
-        {
+        { 
             this.End();
-         
-            this.Stream.Close();           
-            this.Connection.Close();
-        } 
 
+            this.Dispose();
+        }
+ 
         #region Event 
         protected void onServerError(object sender, CFErrorEventArgs e)
         {
@@ -75,8 +110,8 @@ namespace CFS.Net
             {
                 OnClientError(sender, e);
             }
-        }
- 
+        } 
+
         #endregion
     }
 }
