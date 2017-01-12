@@ -136,12 +136,20 @@ namespace CFS.Net
                     var client = await this.m_listener.AcceptTcpClientAsync();
 
                     if (!m_stop)
-                    { 
-                        this.Process(client);                                  
+                    {
+                        ThreadPool.QueueUserWorkItem(
+                            delegate
+                            {
+                                this.Process(client);
+                            }, null
+                        );                                                       
                     }
                     else
                     {
                         client.Close();
+
+                        client.Dispose();
+                        client = null;
                     }
                 }
                 catch(Exception ex)
@@ -184,23 +192,14 @@ namespace CFS.Net
 
             if (this.Sessions.TryGetValue(sessionId, out session))
             {
-                if (session.IsAlive)
-                    session.Close();
+                session.Close();
             } 
         }
 
         #region server 
  
         protected void onConnectServer(object sender, ClientConnectEventArgs e)
-        {
-            ThreadPool.QueueUserWorkItem(
-                delegate
-                {
-                    e.Session.Begin();
-                },
-                    null
-            );   
-
+        {            
             if (OnConnect != null)
             {
                 OnConnect(sender, e);

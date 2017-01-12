@@ -5,12 +5,14 @@ namespace CFS.Net
     public class ClientConnectEventArgs : EventArgs
     {
         public string Message { get; private set; }
-        public ICFSession Session { get; private set; }
+        public string IP { get; private set; }
+        public string Id { get; private set; }
 
-        public ClientConnectEventArgs(string message, ICFSession se)
+        public ClientConnectEventArgs(string message, string ip, string id)
         {
             this.Message = message;
-            this.Session = se;
+            this.IP = ip;
+            this.Id = id;
         }
     } 
 

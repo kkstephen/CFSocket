@@ -22,11 +22,12 @@ namespace CFS.Net
         {
             get
             {
-                return !this.m_Stop;
+                return !this.m_Stop & this.Connection.Client.Poll(1000, SelectMode.SelectWrite) & this.Connection.Connected;
             }
         }
 
         private bool m_Stop;
+
         private bool disposed = false;
 
         public IPEndPoint RemoteHost { get; private set; }
