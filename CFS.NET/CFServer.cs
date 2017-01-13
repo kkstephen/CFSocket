@@ -12,13 +12,13 @@ namespace CFS.Net
     public abstract class CFServer : IDisposable
     {
         public delegate void OnServerError(object sender, CFErrorEventArgs e);
-        public event OnServerError ServerError;
+        public event OnServerError Error;
 
-        public delegate void OnStart(object sender, StartEventArgs e);
-        public event OnStart OnServerStart;
+        public delegate void OnServerStart(object sender, StartEventArgs e);
+        public event OnServerStart OnStart;
 
-        public delegate void OnStop(object sender, StopEventArgs e);
-        public event OnStop OnServerStop;
+        public delegate void OnServerStop(object sender, StopEventArgs e);
+        public event OnServerStop OnStop;
 
         public delegate void OnConnectionAccept(object sender, ClientConnectEventArgs e);
         public event OnConnectionAccept OnConnect;
@@ -30,14 +30,14 @@ namespace CFS.Net
         public event OnClientError ClientError;
 
         private TcpListener m_listener;
-                
+
+        private Thread daemon;
+
         public ConcurrentDictionary<string, ICFSession> Sessions
         {
             get; private set;            
         } 
-
-        public Thread serverThread;
-
+ 
         public string Host { get; set; }
         public int Port { get; set; }
         
@@ -111,8 +111,8 @@ namespace CFS.Net
                 this.m_listener = new TcpListener(this.svrIP);
 
                 this.m_listener.Start();
-                
-                this.Run();
+
+                this.serverStart(this, new StartEventArgs("Server Ready"));                 
             }
             catch(Exception ex)
             {
@@ -122,37 +122,25 @@ namespace CFS.Net
         
         public abstract void Process(TcpClient client);
 
-        protected virtual async void Run()
-        {
-            if (OnServerStart != null)
-            {
-                OnServerStart(this, new StartEventArgs("Server ready"));
-            }         
-
+        protected virtual void Run()
+        { 
             while (true)
             {
                 try
-                {
-                    var client = await this.m_listener.AcceptTcpClientAsync();
-
-                    if (!m_stop)
+                { 
+                    if (!this.m_stop)
                     {
+                        var client = this.m_listener.AcceptTcpClient();
+
                         ThreadPool.QueueUserWorkItem(
                             delegate
                             {
                                 this.Process(client);
                             }, null
                         );                                                       
-                    }
-                    else
-                    {
-                        client.Close();
-
-                        client.Dispose();
-                        client = null;
-                    }
+                    }                    
                 }
-                catch(Exception ex)
+                catch(Exception)
                 {
                     this.m_stop = true;
 
@@ -160,21 +148,21 @@ namespace CFS.Net
                 }
             }
 
-            if (OnServerStop != null)
+            if (OnStop != null)
             {
-                OnServerStop(this, new StopEventArgs("Server stop"));
-            }
+                OnStop(this, new StopEventArgs("Server Stop"));
+            }    
         }
 
         public void Stop()
-        { 
+        {
             this.m_stop = true;
 
             if (this.m_listener != null)
             {
                 this.m_listener.Stop();
                 this.m_listener = null;
-            }
+            }            
         }
     
         public void Clear()
@@ -197,7 +185,19 @@ namespace CFS.Net
         }
 
         #region server 
+
+        protected void serverStart(object sender, StartEventArgs e)
+        {
+            this.daemon = new Thread(this.Run);
  
+            this.daemon.Start();
+
+            if (OnStart != null)
+            {
+                OnStart(this, e);
+            }
+        }
+
         protected void onConnectServer(object sender, ClientConnectEventArgs e)
         {            
             if (OnConnect != null)
@@ -224,9 +224,9 @@ namespace CFS.Net
 
         protected void serverError(object sender, CFErrorEventArgs e)
         {
-            if (ServerError != null)
+            if (Error != null)
             {
-                ServerError(sender, e);
+                Error(sender, e);
             }
         }
 

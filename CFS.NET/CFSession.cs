@@ -22,7 +22,7 @@ namespace CFS.Net
         {
             get
             {
-                return !this.m_Stop & this.Connection.Client.Poll(1000, SelectMode.SelectWrite) & this.Connection.Connected;
+                return !this.m_Stop & this.Connection.Connected;
             }
         }
 
