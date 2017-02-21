@@ -38,8 +38,8 @@ namespace CFS.Net
             get; private set;            
         } 
  
-        public string Host { get; set; }
-        public int Port { get; set; }
+        public string Host { get; private set; }
+        public int Port { get; private set; }
         
         private IPEndPoint svrIP;   
 
@@ -59,8 +59,8 @@ namespace CFS.Net
 
         public CFServer(string host, int port)
         {
-            Port = port;
-            Host = host;      
+            this.Port = port;
+            this.Host = host;      
 
             this.m_stop = true;
 
@@ -122,31 +122,26 @@ namespace CFS.Net
         
         public abstract void Process(TcpClient client);
 
-        protected virtual void Run()
-        { 
-            while (true)
+        protected async virtual void Run()
+        {             
+            try
             {
-                try
-                { 
-                    if (!this.m_stop)
+                while (!this.m_stop)
+                {                                        
+                    var client = await this.m_listener.AcceptTcpClientAsync();
+
+                    Thread thread = new Thread(() =>
                     {
-                        var client = this.m_listener.AcceptTcpClient();
+                        this.Process(client);
+                    });
 
-                        ThreadPool.QueueUserWorkItem(
-                            delegate
-                            {
-                                this.Process(client);
-                            }, null
-                        );                                                       
-                    }                    
-                }
-                catch(Exception)
-                {
-                    this.m_stop = true;
-
-                    break;
-                }
+                    thread.Start();                     
+                }             
             }
+            catch(Exception)
+            {
+                this.m_stop = true; 
+            }            
 
             if (OnStop != null)
             {
@@ -188,7 +183,7 @@ namespace CFS.Net
 
         protected void serverStart(object sender, StartEventArgs e)
         {
-            this.daemon = new Thread(this.Run);
+            this.daemon = new Thread(new ThreadStart(this.Run));
  
             this.daemon.Start();
 
