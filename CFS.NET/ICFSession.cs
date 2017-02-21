@@ -5,9 +5,8 @@ namespace CFS.Net
 {
     public interface ICFSession : IDisposable
      { 
-         IPEndPoint RemoteHost { get; } 
-         IPEndPoint PushHost { get; } 
-
+         IPEndPoint ClientEndPoint { get; } 
+            
          bool IsAlive { get; } 
          void Begin(); 
          void Start(); 

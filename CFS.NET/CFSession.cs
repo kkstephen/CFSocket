@@ -13,9 +13,7 @@ namespace CFS.Net
         public event OnSessionError OnClientError; 
 
         protected TcpClient Connection;
-     
-        public IPEndPoint PushHost { get; set; } 
-         
+      
         public string ID { get; set; }
 
         public bool IsAlive
@@ -30,7 +28,7 @@ namespace CFS.Net
 
         private bool disposed = false;
 
-        public IPEndPoint RemoteHost { get; private set; }
+        public IPEndPoint ClientEndPoint { get; private set; }
 
         protected virtual void Dispose(bool disposing)
         {
@@ -72,7 +70,7 @@ namespace CFS.Net
          
             this.m_Stop = true;
           
-            this.RemoteHost = (IPEndPoint)this.Connection.Client.RemoteEndPoint;
+            this.ClientEndPoint = this.Connection.Client.RemoteEndPoint as IPEndPoint;
         }
          
         public abstract void Begin();
