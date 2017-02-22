@@ -11,6 +11,7 @@ namespace CFS.Net
         private StreamWriter _writer;
         
         private bool disposed = false;
+        private string _data;
 
         public CFStream(NetworkStream stream)
         {
@@ -68,12 +69,15 @@ namespace CFS.Net
         { 
             if (this._netStream.CanRead)
             {
-                return this._reader.ReadLine();
+                this._data = this._reader.ReadLine();
+
+                if (!string.IsNullOrEmpty(this._data))
+                {
+                    return this._data;
+                }
             }
-            else
-            {
-                throw new IOException("Network receive data error.");
-            }           
+            
+            throw new IOException("Network receive data error.");                       
         }
 
         public void Write(string data)

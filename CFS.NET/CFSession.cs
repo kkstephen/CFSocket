@@ -12,13 +12,13 @@ namespace CFS.Net
         public delegate void OnSessionError(object sender, CFErrorEventArgs e);
         public event OnSessionError OnClientError; 
 
-        private TcpClient connection;
+        protected TcpClient Connection;
          
         public bool IsAlive
         {
             get
             {
-                return !this.m_Stop & this.connection.Connected;
+                return !this.m_Stop & this.Connection.Connected;
             }
         } 
 
@@ -42,11 +42,11 @@ namespace CFS.Net
                         this.Stream = null;
                     }
 
-                    if (this.connection != null)
+                    if (this.Connection != null)
                     { 
-                        this.connection.Dispose();
+                        this.Connection.Dispose();
 
-                        this.connection = null;
+                        this.Connection = null;
                     } 
                 }
 
@@ -62,12 +62,12 @@ namespace CFS.Net
 
         public CFSession(TcpClient conn)
         {
-            this.connection = conn;
+            this.Connection = conn;
             this.Stream = new CFStream(conn.GetStream());
          
             this.m_Stop = true;
           
-            this.ClientEndPoint = this.connection.Client.RemoteEndPoint as IPEndPoint;
+            this.ClientEndPoint = this.Connection.Client.RemoteEndPoint as IPEndPoint;
         }
          
         public abstract void Begin();
@@ -85,7 +85,7 @@ namespace CFS.Net
         public virtual void Close()
         {           
             this.Stream.Close();
-            this.connection.Close();
+            this.Connection.Close();
         }
  
         #region Event 
