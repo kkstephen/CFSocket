@@ -9,18 +9,7 @@ namespace CFS.Net
         private NetworkStream _netStream;
         private StreamReader _reader;
         private StreamWriter _writer;
-
-        private bool _isAvabile = false;
-        private string _data;
-
-        public bool IsAvailable
-        {
-            get
-            {
-                return this._isAvabile;
-            }          
-        }
-
+        
         private bool disposed = false;
 
         public CFStream(NetworkStream stream)
@@ -28,9 +17,7 @@ namespace CFS.Net
             this._netStream = stream;
 
             this._reader = new StreamReader(this._netStream);
-            this._writer = new StreamWriter(this._netStream);
-
-            this._isAvabile = true;
+            this._writer = new StreamWriter(this._netStream);            
         }         
 
         protected virtual void Dispose(bool disposing)
@@ -75,27 +62,18 @@ namespace CFS.Net
             this._netStream.Close();
             this._reader.Close();
             this._writer.Close();
-
-            this._isAvabile = false;
         }        
 
         public string Read()
-        {
+        { 
             if (this._netStream.CanRead)
             {
-                this._data = this._reader.ReadLine();
-
-                if (!string.IsNullOrEmpty(this._data))
-                {
-                    return this._data;                     
-                }
-                else
-                {
-                    this._isAvabile = false;
-                }
+                return this._reader.ReadLine();
             }
-            
-            throw new IOException("Network receive data error.");              
+            else
+            {
+                throw new IOException("Network receive data error.");
+            }           
         }
 
         public void Write(string data)
@@ -106,9 +84,7 @@ namespace CFS.Net
                 this._writer.Flush();
             }
             else
-            {
-                this._isAvabile = false;
-
+            { 
                 throw new IOException("Network send data error");               
             } 
         }
