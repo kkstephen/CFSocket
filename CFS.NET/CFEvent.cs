@@ -2,77 +2,78 @@
 
 namespace CFS.Net
 {
-    public class ClientConnectEventArgs : EventArgs
+    public class CFEventArgs : EventArgs
     {
-        public string Message { get; private set; }
-        public string IP { get; private set; }
-        public string Id { get; private set; }
+        public string Message { get; private set; }         
 
-        public ClientConnectEventArgs(string message, string ip, string id)
+        public CFEventArgs(string message)
         {
             this.Message = message;
+        }
+    }
+
+    public class ClientConnectEventArgs : CFEventArgs
+    { 
+        public string IP { get; private set; }
+        public int Port { get; private set; }
+
+        public ClientConnectEventArgs(string ip, int port) : base("Client Connect")
+        { 
             this.IP = ip;
-            this.Id = id;
+            this.Port = port;
         }
     } 
 
-    public class DisconnectEventArgs : EventArgs
+    public class DisconnectEventArgs : CFEventArgs
     {
-        public string SessonId { get; private set; }
-       
-        public DisconnectEventArgs(string ssid)
+        public string IP { get; private set; }
+        public int Port { get; private set; }
+
+        public DisconnectEventArgs(string ip, int port) : base("Client Disconnect")
         {
-            this.SessonId = ssid;
+            this.IP = ip;
+            this.Port = port;
+        } 
+    }
+
+    public class ClientLoginEventArgs : CFEventArgs
+    { 
+        public string UserId { get; private set; }
+
+        public ClientLoginEventArgs(string userid) : base("Client Login")
+        {
+            this.UserId = userid;            
         }
     }
 
-    public class ClientLoginEventArgs : EventArgs
-    {
-        public string Message { get; private set; }        
-
-        public ClientLoginEventArgs(string str)
-        {
-            this.Message = str;            
-        }
-    }
-
-    public class SessionCloseEventArgs : EventArgs
+    public class SessionCloseEventArgs : CFEventArgs
     {
         public string ID { get; private set; }
      
-        public SessionCloseEventArgs(string id)
+        public SessionCloseEventArgs(string id) : base("Session Close")
         {            
             this.ID = id;
         }
     } 
     
-    public class CFErrorEventArgs : EventArgs
-    {
-        public string Message { get; private set; }        
-
-        public CFErrorEventArgs(string message)
+    public class CFErrorEventArgs : CFEventArgs
+    {   
+        public CFErrorEventArgs(string message) : base(message)
         {
-            this.Message = message;
         }
     }
     
-    public class StartEventArgs : EventArgs
+    public class ServerStartEventArgs : CFEventArgs
     {
-        public string Message { get; private set; }
-
-        public StartEventArgs(string message)
+        public ServerStartEventArgs(string message) : base(message)
         {
-            this.Message = message;
         }
     }
 
-    public class StopEventArgs : EventArgs
+    public class ServerStopEventArgs : CFEventArgs
     {
-        public string Message { get; private set; }
-
-        public StopEventArgs(string message)
+        public ServerStopEventArgs(string message) : base(message)
         {
-            this.Message = message;
         }
     } 
 }

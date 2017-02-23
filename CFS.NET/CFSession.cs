@@ -5,13 +5,7 @@ using System.Net.Sockets;
 namespace CFS.Net
 {
     public abstract class CFSession : CFSocket, ICFSession
-    {          
-        public delegate void OnError(object sender, CFErrorEventArgs e);
-        public event OnError OnServerError;
-
-        public delegate void OnSessionError(object sender, CFErrorEventArgs e);
-        public event OnSessionError OnClientError; 
-
+    {    
         protected TcpClient Connection;
          
         public bool IsAlive
@@ -86,24 +80,6 @@ namespace CFS.Net
         {           
             this.Stream.Close();
             this.Connection.Close();
-        }
- 
-        #region Event 
-        protected void onServerError(object sender, CFErrorEventArgs e)
-        {
-            if (OnServerError != null)
-            {
-                OnServerError(sender, e);
-            }
-        }
-
-        protected void onSessionError(object sender, CFErrorEventArgs e)
-        {
-            if (OnClientError != null)
-            {
-                OnClientError(sender, e);
-            }
-        } 
-        #endregion
+        }  
     }
 }

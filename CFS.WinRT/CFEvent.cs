@@ -1,64 +1,79 @@
 ﻿using System;
 
 namespace CFS.WinRT
-{ 
-    public class DisconnectEventArgs : EventArgs
+{
+    public class CFEventArgs : EventArgs
     {
-        public string SessonId { get; private set; }
-       
-        public DisconnectEventArgs(string ssid)
+        public string Message { get; private set; }
+
+        public CFEventArgs(string message)
         {
-            this.SessonId = ssid;
+            this.Message = message;
         }
     }
 
-    public class ClientLoginEventArgs : EventArgs
+    public class ClientConnectEventArgs : CFEventArgs
     {
-        public string Message { get; private set; }        
+        public string IP { get; private set; }
+        public int Port { get; private set; }
 
-        public ClientLoginEventArgs(string str)
+        public ClientConnectEventArgs(string ip, int port) : base("Client Connect")
         {
-            this.Message = str;            
+            this.IP = ip;
+            this.Port = port;
         }
     }
 
-    public class SessionCloseEventArgs : EventArgs
+    public class DisconnectEventArgs : CFEventArgs
+    {
+        public string IP { get; private set; }
+        public int Port { get; private set; }
+
+        public DisconnectEventArgs(string ip, int port) : base("Client Disconnect")
+        {
+            this.IP = ip;
+            this.Port = port;
+        }
+    }
+
+    public class ClientLoginEventArgs : CFEventArgs
+    {
+        public string UserId { get; private set; }
+
+        public ClientLoginEventArgs(string userid) : base("Client Login")
+        {
+            this.UserId = userid;
+        }
+    }
+
+    public class SessionCloseEventArgs : CFEventArgs
     {
         public string ID { get; private set; }
-     
-        public SessionCloseEventArgs(string id)
-        {            
+
+        public SessionCloseEventArgs(string id) : base("Session Close")
+        {
             this.ID = id;
         }
-    } 
-    
-    public class CFErrorEventArgs : EventArgs
-    {
-        public string Message { get; private set; }        
-
-        public CFErrorEventArgs(string message)
-        {
-            this.Message = message;
-        }
     }
-    
-    public class StartEventArgs : EventArgs
-    {
-        public string Message { get; private set; }
 
-        public StartEventArgs(string message)
+    public class CFErrorEventArgs : CFEventArgs
+    {
+        public CFErrorEventArgs(string message) : base(message)
         {
-            this.Message = message;
         }
     }
 
-    public class StopEventArgs : EventArgs
+    public class ServerStartEventArgs : CFEventArgs
     {
-        public string Message { get; private set; }
-
-        public StopEventArgs(string message)
+        public ServerStartEventArgs(string message) : base(message)
         {
-            this.Message = message;
         }
-    } 
+    }
+
+    public class ServerStopEventArgs : CFEventArgs
+    {
+        public ServerStopEventArgs(string message) : base(message)
+        {
+        }
+    }
 }
