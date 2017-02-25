@@ -14,15 +14,16 @@ namespace CFS.Net
             {
                 return !this.m_Stop;
             }
-        } 
+        }
+
+        public string Host { get; private set; }
+        public int Port { get; private set; }
 
         private bool m_Stop;
         private bool m_closed;
 
         private bool disposed = false;
-
-        public IPEndPoint ClientEndPoint { get; private set; }
-
+        
         protected virtual void Dispose(bool disposing)
         {
             if (!this.disposed)
@@ -63,7 +64,10 @@ namespace CFS.Net
             this.m_Stop = true;
             this.m_closed = true;
           
-            this.ClientEndPoint = this.Connection.Client.RemoteEndPoint as IPEndPoint;
+            var ep = this.Connection.Client.RemoteEndPoint as IPEndPoint;
+
+            this.Host = ep.Address.ToString();
+            this.Port = ep.Port;
         }
          
         public abstract void Begin();

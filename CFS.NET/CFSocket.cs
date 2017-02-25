@@ -6,7 +6,7 @@ namespace CFS.Net
     public class CFSocket : ICFSocket
     {
         protected CFStream Stream;
- 
+
         public ICFCrypto Cipher
         {
             get; set;            

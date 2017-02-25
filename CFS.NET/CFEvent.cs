@@ -18,10 +18,10 @@ namespace CFS.Net
         public string IP { get; private set; }
         public int Port { get; private set; }
 
-        public ClientConnectEventArgs(IPEndPoint ep) : base("Client Connect")
+        public ClientConnectEventArgs(string host, int port) : base("Client Connect")
         { 
-            this.IP = ep.Address.ToString();
-            this.Port = ep.Port;
+            this.IP = host;
+            this.Port = port;
         }
     } 
 
@@ -30,22 +30,12 @@ namespace CFS.Net
         public string IP { get; private set; }
         public int Port { get; private set; }
 
-        public DisconnectEventArgs(IPEndPoint ep) : base("Client Disconnect")
+        public DisconnectEventArgs(string host, int port) : base("Client Disconnect")
         {
-            this.IP = ep.Address.ToString();
-            this.Port = ep.Port;
+            this.IP = host;
+            this.Port = port;
         } 
-    }
-
-    public class ClientLoginEventArgs : CFEventArgs
-    { 
-        public string UserId { get; private set; }
-
-        public ClientLoginEventArgs(string userid) : base("Client Login")
-        {
-            this.UserId = userid;            
-        }
-    }
+    }    
 
     public class SessionCloseEventArgs : CFEventArgs
     {

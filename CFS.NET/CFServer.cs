@@ -60,12 +60,8 @@ namespace CFS.Net
                 if (disposing)
                 {
                     // dispose managed resources 
-                    if (this.m_listener != null)
-                    {
-                        this.m_listener.Server.Dispose();
-                        this.m_listener = null;
-                    }
- 
+                    this.shutdown();
+
                     if (this.Sessions != null)
                     {
                         this.Sessions.Clear();
@@ -119,12 +115,7 @@ namespace CFS.Net
                 {                                        
                     var tcpclient = await this.m_listener.AcceptTcpClientAsync();
 
-                    if (OnConnect != null)
-                    {
-                        OnConnect(this, new ClientConnectEventArgs(tcpclient.Client.RemoteEndPoint as IPEndPoint));
-                    }
-
-                    this.Process(tcpclient);                   
+                    this.Process(tcpclient);                          
                 }             
             }
             catch(Exception)
@@ -142,12 +133,19 @@ namespace CFS.Net
         {
             this.m_stop = true;
 
+            this.shutdown();            
+        }
+
+        private void shutdown()
+        {
             if (this.m_listener != null)
             {
                 this.m_listener.Stop();
-                this.m_listener = null;
-            }            
-        }
+                this.m_listener.Server.Dispose();
+
+                this.m_listener = null;            
+            }           
+        } 
     
         public void Clear()
         { 
@@ -179,12 +177,12 @@ namespace CFS.Net
             }
         }
 
-        #region server  
-        protected void Disconnect_Server(object sender, DisconnectEventArgs e)
+        #region Server Event  
+        protected void Client_Connect(object sender, ClientConnectEventArgs e)
         {
-            if (OnDisconnect != null)
+            if (OnConnect != null)
             {
-                OnDisconnect(sender, e);
+                OnConnect(this, e);
             }
         }
 
@@ -193,8 +191,11 @@ namespace CFS.Net
             ICFSession session = null;
 
             if (this.Sessions.TryRemove(e.ID, out session))
-            {
-                this.Disconnect_Server(sender, new DisconnectEventArgs(session.ClientEndPoint));
+            { 
+                if (OnDisconnect != null)
+                {
+                    OnDisconnect(this, new DisconnectEventArgs(session.Host, session.Port));                    
+                }
 
                 this.Terminate(session);
             }
@@ -219,7 +220,6 @@ namespace CFS.Net
                 OnServerError(sender, e);
             }
         }
-
         #endregion 
     }
 }
