@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 
 namespace CFS.Net
 {
@@ -17,10 +18,10 @@ namespace CFS.Net
         public string IP { get; private set; }
         public int Port { get; private set; }
 
-        public ClientConnectEventArgs(string ip, int port) : base("Client Connect")
+        public ClientConnectEventArgs(IPEndPoint ep) : base("Client Connect")
         { 
-            this.IP = ip;
-            this.Port = port;
+            this.IP = ep.Address.ToString();
+            this.Port = ep.Port;
         }
     } 
 
@@ -29,10 +30,10 @@ namespace CFS.Net
         public string IP { get; private set; }
         public int Port { get; private set; }
 
-        public DisconnectEventArgs(string ip, int port) : base("Client Disconnect")
+        public DisconnectEventArgs(IPEndPoint ep) : base("Client Disconnect")
         {
-            this.IP = ip;
-            this.Port = port;
+            this.IP = ep.Address.ToString();
+            this.Port = ep.Port;
         } 
     }
 

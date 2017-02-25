@@ -26,11 +26,9 @@ namespace CFS.Net
             get; private set;            
         } 
  
-        public string Host { get; private set; }
-        public int Port { get; private set; }
+        public string Host { get; set; }
+        public int Port { get; set; }
         
-        private IPEndPoint svrIP;   
-
         private volatile bool m_stop;
 
         public bool IsRunning
@@ -51,8 +49,6 @@ namespace CFS.Net
             this.Host = host;      
 
             this.m_stop = true;
-
-            this.svrIP = new IPEndPoint(IPAddress.Parse(Host), Port); 
 
             this.Sessions = new ConcurrentDictionary<string, ICFSession>(); 
         } 
@@ -91,14 +87,16 @@ namespace CFS.Net
         public void Start()
         {
             this.Sessions.Clear();
-
-            this.m_stop = false;
-                        
+                                    
             try
             {
-                this.m_listener = new TcpListener(this.svrIP);
+                var ep = new IPEndPoint(IPAddress.Parse(Host), Port);
+
+                this.m_listener = new TcpListener(ep);
                  
                 this.m_listener.Start();
+
+                this.m_stop = false;
 
                 if (OnStart != null)
                 {
@@ -107,7 +105,7 @@ namespace CFS.Net
             }
             catch(Exception ex)
             {
-                this.serverError(this, new CFErrorEventArgs(ex.Message));
+                this.Server_Error(this, new CFErrorEventArgs(ex.Message));
             }
         }
         
@@ -119,9 +117,14 @@ namespace CFS.Net
             {
                 while (!this.m_stop)
                 {                                        
-                    var client = await this.m_listener.AcceptTcpClientAsync();
+                    var tcpclient = await this.m_listener.AcceptTcpClientAsync();
 
-                    this.Process(client);                   
+                    if (OnConnect != null)
+                    {
+                        OnConnect(this, new ClientConnectEventArgs(tcpclient.Client.RemoteEndPoint as IPEndPoint));
+                    }
+
+                    this.Process(tcpclient);                   
                 }             
             }
             catch(Exception)
@@ -165,16 +168,19 @@ namespace CFS.Net
             } 
         }
 
-        #region server  
-        protected void onConnectServer(object sender, ClientConnectEventArgs e)
+        protected void Terminate(ICFSession session)
         {
-            if (OnConnect != null)
+            if (session != null)
             {
-                OnConnect(sender, e);
+                session.Close();
+                session.Dispose();
+
+                session = null;
             }
         }
 
-        protected void onDisconnectServer(object sender, DisconnectEventArgs e)
+        #region server  
+        protected void Disconnect_Server(object sender, DisconnectEventArgs e)
         {
             if (OnDisconnect != null)
             {
@@ -182,7 +188,23 @@ namespace CFS.Net
             }
         }
 
-        protected void clientError(object sender, CFErrorEventArgs e)
+        protected void Session_Close(object sender, SessionCloseEventArgs e)
+        {
+            ICFSession session = null;
+
+            if (this.Sessions.TryRemove(e.ID, out session))
+            {
+                this.Disconnect_Server(sender, new DisconnectEventArgs(session.ClientEndPoint));
+
+                this.Terminate(session);
+            }
+            else
+            {
+                this.Server_Error(this, new CFErrorEventArgs("Session remove fail: " + e.ID));
+            }
+        }
+
+        protected void Client_Error(object sender, CFErrorEventArgs e)
         {
             if (OnClientError != null)
             {
@@ -190,7 +212,7 @@ namespace CFS.Net
             }
         }
 
-        protected void serverError(object sender, CFErrorEventArgs e)
+        protected void Server_Error(object sender, CFErrorEventArgs e)
         {
             if (OnServerError != null)
             {

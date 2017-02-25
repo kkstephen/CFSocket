@@ -12,11 +12,12 @@ namespace CFS.Net
         {
             get
             {
-                return !this.m_Stop & this.Connection.Connected;
+                return !this.m_Stop;
             }
         } 
 
         private bool m_Stop;
+        private bool m_closed;
 
         private bool disposed = false;
 
@@ -60,6 +61,7 @@ namespace CFS.Net
             this.Stream = new CFStream(conn.GetStream());
          
             this.m_Stop = true;
+            this.m_closed = true;
           
             this.ClientEndPoint = this.Connection.Client.RemoteEndPoint as IPEndPoint;
         }
@@ -69,6 +71,7 @@ namespace CFS.Net
         public virtual void Start()
         {
             this.m_Stop = false;
+            this.m_closed = false;
         }
   
         public virtual void End()
@@ -77,9 +80,16 @@ namespace CFS.Net
         }
          
         public virtual void Close()
-        {           
-            this.Stream.Close();
-            this.Connection.Close();
+        {            
+            if (!this.m_closed)
+            {
+                this.m_closed = true;
+
+                this.End();
+                
+                this.Stream.Close();
+                this.Connection.Close();
+            }       
         }  
     }
 }
