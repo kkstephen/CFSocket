@@ -14,10 +14,7 @@ namespace CFS.Net
             {
                 return !this.m_Stop;
             }
-        }
-
-        public string Host { get; private set; }
-        public int Port { get; private set; }
+        } 
 
         private bool m_Stop;
         private bool m_closed;
