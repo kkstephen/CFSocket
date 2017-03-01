@@ -77,7 +77,7 @@ namespace CFS.Net
                 }
             }
             
-            throw new IOException("Network receive data error.");                       
+            throw new IOException("Network stream cannot read data");                       
         }
 
         public void Write(string data)
@@ -89,7 +89,7 @@ namespace CFS.Net
             }
             else
             { 
-                throw new IOException("Network send data error");               
+                throw new IOException("Networkstream cannot send data");               
             } 
         }
     }

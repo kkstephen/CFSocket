@@ -6,6 +6,9 @@ namespace CFS.WinRT
 {
     public class CFSocket : ICFSocket
     {
+        public string Host { get; set; }
+        public int Port { get; set; }
+
         protected CFStream Stream;
  
         public ICFCrypto Cipher

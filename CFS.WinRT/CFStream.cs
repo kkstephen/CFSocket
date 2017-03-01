@@ -14,15 +14,7 @@ namespace CFS.WinRT
  
         private bool _isAvabile = false;
         private string _data;
-
-        public bool IsAvailable
-        {
-            get
-            {
-                return this._isAvabile;
-            }          
-        }
-
+ 
         private bool disposed = false;
 
         public CFStream(StreamSocket socket)

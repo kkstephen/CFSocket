@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CFS.Net
 {
-    public abstract class CFServer : IDisposable
+    public abstract class CFServer : ICFServer, IDisposable
     { 
         public event EventHandler<ServerStartEventArgs> OnStart;
         public event EventHandler<ServerStopEventArgs> OnStop;
@@ -178,7 +178,7 @@ namespace CFS.Net
         }
 
         #region Server Event  
-        protected void Client_Connect(object sender, ClientConnectEventArgs e)
+        protected void Client_Connect(ClientConnectEventArgs e)
         {
             if (OnConnect != null)
             {
@@ -186,7 +186,7 @@ namespace CFS.Net
             }
         }
 
-        protected void Session_Close(object sender, SessionCloseEventArgs e)
+        protected void Client_Close(object sender, SessionCloseEventArgs e)
         {
             ICFSession session = null;
 
@@ -194,7 +194,7 @@ namespace CFS.Net
             { 
                 if (OnDisconnect != null)
                 {
-                    OnDisconnect(this, new DisconnectEventArgs(session.Host, session.Port));                    
+                    OnDisconnect(sender, new DisconnectEventArgs(session.Host, session.Port));                    
                 }
 
                 this.Terminate(session);
@@ -208,7 +208,7 @@ namespace CFS.Net
         protected void Client_Error(object sender, CFErrorEventArgs e)
         {
             if (OnClientError != null)
-            {
+            { 
                 OnClientError(sender, e);
             }
         }
