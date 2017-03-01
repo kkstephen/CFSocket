@@ -1,25 +1,21 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 
 namespace CFS.Net
 {
     public class CFStream : IDisposable
-    {          
+    {
         private NetworkStream _netStream;
-        private StreamReader _reader;
-        private StreamWriter _writer;
-        
+        private StreamReader _sr;
+        private StreamWriter _sw;
+
         private bool disposed = false;
-        private string _data;
+ 
+        public ICFCrypto Cipher { get; set; }
 
-        public CFStream(NetworkStream stream)
-        {
-            this._netStream = stream;
-
-            this._reader = new StreamReader(this._netStream);
-            this._writer = new StreamWriter(this._netStream);            
-        }         
+        public bool Encryption { get; set; }
 
         protected virtual void Dispose(bool disposing)
         {
@@ -34,16 +30,16 @@ namespace CFS.Net
                         this._netStream = null;
                     }
 
-                    if (this._reader != null)
-                    {                        
-                        this._reader.Dispose();
-                        this._reader = null;                     
+                    if (this._sr != null)
+                    {
+                        this._sr.Dispose();
+                        this._sr = null;
                     }
 
-                    if (this._writer != null)
-                    {                        
-                        this._writer.Dispose();
-                        this._writer = null;                     
+                    if (this._sw != null)
+                    {
+                        this._sw.Dispose();
+                        this._sw = null;
                     }
                 }
 
@@ -55,42 +51,61 @@ namespace CFS.Net
         public void Dispose()
         {
             Dispose(true);
-            GC.SuppressFinalize(this);  
+            GC.SuppressFinalize(this);
         }
-        
+
+        public CFStream(NetworkStream stream)
+        {
+            this._netStream = stream;
+
+            this._sr = new StreamReader(this._netStream);
+            this._sw = new StreamWriter(this._netStream);
+        }
+
         public void Close()
         {
             this._netStream.Close();
-            this._reader.Close();
-            this._writer.Close();
-        }        
 
-        public string Read()
-        { 
+            this._sr.Close();
+            this._sw.Close();
+        }
+
+        public string ReadAll()
+        {
             if (this._netStream.CanRead)
             {
-                this._data = this._reader.ReadLine();
-
-                if (!string.IsNullOrEmpty(this._data))
-                {
-                    return this._data;
-                }
+                return this._sr.ReadToEnd();
             }
-            
-            throw new IOException("Network stream cannot read data");                       
+
+            throw new IOException("Network stream can not read data");
+        }
+
+        public string ReadLine()
+        {
+            if (this._netStream.CanRead)
+            {
+                return this._sr.ReadLine(); 
+            }
+
+            throw new IOException("Network stream can not read data");
         }
 
         public void Write(string data)
         {
             if (this._netStream.CanWrite)
-            { 
-                this._writer.WriteLine(data);
-                this._writer.Flush();
+            {
+                this._sw.Write(data);
+                this._sw.Flush();
             }
             else
-            { 
-                throw new IOException("Networkstream cannot send data");               
-            } 
+            {
+                throw new IOException("Network stream can not send data");
+            }
+        }
+
+        public void WriteLine(string data)
+        {
+            this.Write(data + "\r\n");
         }
     }
 }

@@ -25,17 +25,24 @@ namespace CFS.Net
         }
     } 
 
-    public class DisconnectEventArgs : CFEventArgs
+    public class ClientDisconnectEventArgs : CFEventArgs
     {
         public string IP { get; private set; }
         public int Port { get; private set; }
 
-        public DisconnectEventArgs(string host, int port) : base("Client Disconnect")
+        public ClientDisconnectEventArgs(string host, int port) : base("Client Disconnect")
         {
             this.IP = host;
             this.Port = port;
         } 
-    }    
+    }
+
+    public class SessionOpenEventArgs : CFEventArgs
+    {
+        public SessionOpenEventArgs() : base("Session Open")
+        {
+        }
+    }
 
     public class SessionCloseEventArgs : CFEventArgs
     {
@@ -45,7 +52,14 @@ namespace CFS.Net
         {            
             this.ID = id;
         }
-    } 
+    }
+
+    public class DataReceivedEventArgs : CFEventArgs
+    { 
+        public DataReceivedEventArgs(string data) : base(data)
+        {             
+        }
+    }
     
     public class CFErrorEventArgs : CFEventArgs
     {   

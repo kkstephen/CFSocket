@@ -4,93 +4,37 @@ using System.Net.Sockets;
 
 namespace CFS.Net
 {
-    public abstract class CFSession : CFSocket, ICFSession
-    {    
-        protected TcpClient Connection;
-         
+    public abstract class CFSession : CFSocket, ICFSession, IDisposable
+    {
+        protected bool m_stop;
+        
         public bool IsAlive
         {
             get
             {
-                return !this.m_Stop;
+                return !this.m_stop;
             }
-        } 
+        }
+  
+        public CFSession(TcpClient client)
+        {
+            this.Connection = client;
 
-        private bool m_Stop;
-        private bool m_closed;
+            this.m_closed = false;
 
-        private bool disposed = false;
+            this.m_stop = true;   
+        }
         
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    // dispose managed resources
-                    if (this.Stream != null)
-                    { 
-                        this.Stream.Dispose();
-
-                        this.Stream = null;
-                    }
-
-                    if (this.Connection != null)
-                    { 
-                        this.Connection.Dispose();
-
-                        this.Connection = null;
-                    } 
-                }
-
-                this.disposed = true;
-            }            
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        public CFSession(TcpClient conn)
-        {
-            this.Connection = conn;
-            this.Stream = new CFStream(conn.GetStream());
-         
-            this.m_Stop = true;
-            this.m_closed = true;
-          
-            var ep = this.Connection.Client.RemoteEndPoint as IPEndPoint;
-
-            this.Host = ep.Address.ToString();
-            this.Port = ep.Port;
-        }
-         
-        public abstract void Begin();
-
         public virtual void Start()
         {
-            this.m_Stop = false;
-            this.m_closed = false;
+            this.m_stop = false;
+
+            this.Open();
         }
   
         public virtual void End()
         {
-            this.m_Stop = true;
-        }
-         
-        public virtual void Close()
-        {            
-            if (!this.m_closed)
-            {
-                this.m_closed = true;
-
-                this.End();
-                
-                this.Stream.Close();
-                this.Connection.Close();
-            }       
-        }  
+            this.m_stop = true;
+        } 
     }
 }

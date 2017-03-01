@@ -37,13 +37,13 @@
   <ItemGroup>
     <Compile Include="CFEvent.cs" />
     <Compile Include="CFSocket.cs" />
+    <Compile Include="CFStream.cs" />
     <Compile Include="ICFCrypto.cs" />
     <Compile Include="ICFServer.cs" />
     <Compile Include="ICFSession.cs" />
     <Compile Include="ICFSocket.cs" />
     <Compile Include="CFServer.cs" />
     <Compile Include="CFSession.cs" />
-    <Compile Include="CFStream.cs" />
     <Compile Include="ICFMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -15,7 +15,7 @@ namespace CFS.Net
         public event EventHandler<ServerStartEventArgs> OnStart;
         public event EventHandler<ServerStopEventArgs> OnStop;
         public event EventHandler<ClientConnectEventArgs> OnConnect;
-        public event EventHandler<DisconnectEventArgs> OnDisconnect;
+        public event EventHandler<ClientDisconnectEventArgs> OnDisconnect;
         public event EventHandler<CFErrorEventArgs> OnServerError;
         public event EventHandler<CFErrorEventArgs> OnClientError;         
 
@@ -139,10 +139,10 @@ namespace CFS.Net
         private void shutdown()
         {
             if (this.m_listener != null)
-            {
+            {                
                 this.m_listener.Stop();
-                this.m_listener.Server.Dispose();
 
+                this.m_listener.Server.Dispose();
                 this.m_listener = null;            
             }           
         } 
@@ -186,7 +186,7 @@ namespace CFS.Net
             }
         }
 
-        protected void Client_Close(object sender, SessionCloseEventArgs e)
+        protected void Session_Close(object sender, SessionCloseEventArgs e)
         {
             ICFSession session = null;
 
@@ -194,7 +194,7 @@ namespace CFS.Net
             { 
                 if (OnDisconnect != null)
                 {
-                    OnDisconnect(sender, new DisconnectEventArgs(session.Host, session.Port));                    
+                    OnDisconnect(sender, new ClientDisconnectEventArgs(session.Host, session.Port));                    
                 }
 
                 this.Terminate(session);
