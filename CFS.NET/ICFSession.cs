@@ -11,6 +11,7 @@ namespace CFS.Net
        
         void Start(); 
         void End();
-        void Begin();       
+        void Begin();
+        void Abort(); 
     } 
 }

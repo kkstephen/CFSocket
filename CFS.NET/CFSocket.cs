@@ -6,39 +6,28 @@ using System.Net.Sockets;
 
 namespace CFS.Net
 {
-    public class CFSocket : ICFSocket, IDisposable
+    public abstract class CFSocket : ICFSocket, IDisposable
     { 
         public event EventHandler<SessionOpenEventArgs> OnOpen;
         public event EventHandler<SessionCloseEventArgs> OnClose;
         public event EventHandler<CFErrorEventArgs> OnError;
         public event EventHandler<DataReceivedEventArgs> OnReceived;
 
-        protected TcpClient Connection;
-
-        private CFStream stream;
+        protected TcpClient Connection { get; set; }
+        protected CFStream Stream;
    
         public string ID { get; set; }
 
         public string Host { get; set; }
         public int Port { get; set; }
-
-        public bool IsConnected
-        {
-            get
-            {
-                return !this.m_closed;
-            }
-        }
-
+        
         protected bool m_closed;
-
-        private bool disposed = false;
- 
-        public int Timeout { get; set; }
-      
+         
         public ICFCrypto Cipher { get; set; }
         public bool Encryption { get; set; }
          
+        private bool disposed = false;
+
         protected virtual void Dispose(bool disposing)
         {
             if (!this.disposed)
@@ -46,11 +35,11 @@ namespace CFS.Net
                 if (disposing)
                 {
                     // dispose managed resources
-                    if (this.stream != null)
+                    if (this.Stream != null)
                     {
-                        this.stream.Dispose();
-                        this.stream = null;
-                    }                     
+                        this.Stream.Dispose();
+                        this.Stream = null;
+                    }
 
                     if (this.Connection != null)
                     {
@@ -72,55 +61,44 @@ namespace CFS.Net
 
         public CFSocket()
         {
-            this.Timeout = 20;
+            this.ID = "";
+
+            this.m_closed = true;
         }
 
-        public void Connect(int second)
+        public virtual void Abort()
         {
-            var task = this.Connection.ConnectAsync(this.Host, this.Port);
+            if (!this.m_closed)
+            {
+                if (this.Stream != null)
+                    this.Stream.Close();
+                
+                this.Connection.Close();
 
-            if (task.Wait(second * 1000, new CancellationToken(false)))
-            { 
-                this.Open();        
+                this.m_closed = true;
             }
         }
 
-        protected void Open()
+        public virtual void Open()
         {
+            this.Stream = new CFStream(this.Connection.GetStream());
+
             this.m_closed = false;
-
-            this.Connection.Client.ReceiveTimeout = this.Timeout * 1000;
-            this.Connection.Client.SendTimeout = this.Timeout * 1000;
-
-            this.stream = new CFStream(this.Connection.GetStream());
 
             if (OnOpen != null)
             {
                 OnOpen(this, new SessionOpenEventArgs());
-            } 
-        }
-
-        public void Abort()
-        {
-            if (!this.m_closed)
-            { 
-                if (this.stream != null)
-                    this.stream.Close();
-
-                this.Connection.Close();
-
-                this.m_closed = true;              
             }
         }
 
-        public void Close()
+        public virtual void Close()
         {
-            this.Abort(); 
+            this.Abort();
 
             if (OnClose != null)
             {
                 OnClose(this, new SessionCloseEventArgs(this.ID));
-            }             
+            }
         }
 
         public virtual string Receive()
@@ -128,7 +106,7 @@ namespace CFS.Net
             if (this.m_closed)
                 throw new Exception("Connection closed."); 
 
-            string data = this.stream.ReadLine();
+            string data = this.Stream.ReadLine();
 
             if (OnReceived != null)
             {
@@ -158,10 +136,10 @@ namespace CFS.Net
                 data = this.Cipher.Encrypt(data);
             }
 
-            this.stream.WriteLine(data);                        
+            this.Stream.WriteLine(data);                        
         }
 
-        #region Event
+        #region Event              
         protected void onSocketError(CFErrorEventArgs e)
         {
             if (OnError != null)

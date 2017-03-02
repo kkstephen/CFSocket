@@ -6,8 +6,7 @@ namespace CFS.Net
     { 
         void Send(string data);
         string Receive();
-
-        void Abort();
+ 
         void Close();
     }
 }

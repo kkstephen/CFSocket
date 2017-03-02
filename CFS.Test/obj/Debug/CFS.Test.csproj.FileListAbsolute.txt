@@ -1,0 +1,14 @@
+E:\Github\CFSocket\CFS.Test\bin\Debug\CFS.Test.exe.config
+E:\Github\CFSocket\CFS.Test\bin\Debug\CFS.Test.exe
+E:\Github\CFSocket\CFS.Test\bin\Debug\CFS.Test.pdb
+E:\Github\CFSocket\CFS.Test\obj\Debug\CFS.Test.csprojResolveAssemblyReference.cache
+E:\Github\CFSocket\CFS.Test\obj\Debug\MainWindow.g.cs
+E:\Github\CFSocket\CFS.Test\obj\Debug\App.g.cs
+E:\Github\CFSocket\CFS.Test\obj\Debug\CFS.Test_MarkupCompile.cache
+E:\Github\CFSocket\CFS.Test\obj\Debug\CFS.Test_MarkupCompile.lref
+E:\Github\CFSocket\CFS.Test\obj\Debug\MainWindow.baml
+E:\Github\CFSocket\CFS.Test\obj\Debug\CFS.Test.g.resources
+E:\Github\CFSocket\CFS.Test\obj\Debug\CFS.Test.Properties.Resources.resources
+E:\Github\CFSocket\CFS.Test\obj\Debug\CFS.Test.csproj.GenerateResource.Cache
+E:\Github\CFSocket\CFS.Test\obj\Debug\CFS.Test.exe
+E:\Github\CFSocket\CFS.Test\obj\Debug\CFS.Test.pdb

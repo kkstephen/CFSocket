@@ -4,10 +4,10 @@ using System.Net.Sockets;
 
 namespace CFS.Net
 {
-    public abstract class CFSession : CFSocket, ICFSession, IDisposable
+    public abstract class CFSession : CFSocket, ICFSession 
     {
-        protected bool m_stop;
-        
+        private bool m_stop;
+
         public bool IsAlive
         {
             get
@@ -15,19 +15,29 @@ namespace CFS.Net
                 return !this.m_stop;
             }
         }
-  
-        public CFSession(TcpClient client)
-        {
-            this.Connection = client;
 
-            this.m_closed = false;
+        private int timeout; 
+        public int Timeout
+        {
+            set
+            {
+                this.timeout = value;
+
+                this.Connection.ReceiveTimeout = this.timeout * 1000;
+                this.Connection.SendBufferSize = this.timeout * 1000;
+            }
+        }
+
+        public CFSession(TcpClient client) 
+        {
+            this.Connection = client; 
 
             this.m_stop = true;   
         }
         
         public virtual void Start()
-        {
-            this.m_stop = false;
+        {  
+            this.m_stop = false;            
 
             this.Open();
         }
