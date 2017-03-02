@@ -14,18 +14,15 @@ namespace CFS.Net
         public event EventHandler<DataReceivedEventArgs> OnReceived;
 
         protected TcpClient Connection { get; set; }
-        protected CFStream Stream;
+        protected CFStream Stream { get; private set; }
    
         public string ID { get; set; }
 
         public string Host { get; set; }
         public int Port { get; set; }
         
-        protected bool m_closed;
-         
-        public ICFCrypto Cipher { get; set; }
-        public bool Encryption { get; set; }
-         
+        private bool m_closed;
+               
         private bool disposed = false;
 
         protected virtual void Dispose(bool disposing)
@@ -66,19 +63,6 @@ namespace CFS.Net
             this.m_closed = true;
         }
 
-        public virtual void Abort()
-        {
-            if (!this.m_closed)
-            {
-                if (this.Stream != null)
-                    this.Stream.Close();
-                
-                this.Connection.Close();
-
-                this.m_closed = true;
-            }
-        }
-
         public virtual void Open()
         {
             this.Stream = new CFStream(this.Connection.GetStream());
@@ -91,6 +75,19 @@ namespace CFS.Net
             }
         }
 
+        public virtual void Abort()
+        {
+            if (!this.m_closed)
+            {
+                if (this.Stream != null)
+                    this.Stream.Close();
+                
+                this.Connection.Close();
+
+                this.m_closed = true;
+            }
+        }
+        
         public virtual void Close()
         {
             this.Abort();
@@ -113,11 +110,6 @@ namespace CFS.Net
                 OnReceived(this, new DataReceivedEventArgs(data));
             }
 
-            if (Encryption)
-            {
-                data = this.Cipher.Decrypt(data);
-            } 
-
             return data;                        
         }
 
@@ -130,12 +122,7 @@ namespace CFS.Net
         {
             if (this.m_closed)
                 throw new Exception("Connection closed.");
-
-            if (Encryption)
-            {
-                data = this.Cipher.Encrypt(data);
-            }
-
+            
             this.Stream.WriteLine(data);                        
         }
 
