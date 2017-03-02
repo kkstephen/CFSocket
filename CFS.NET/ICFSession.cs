@@ -10,7 +10,7 @@ namespace CFS.Net
         bool IsAlive { get; } 
        
         void Start(); 
-        void End(); 
-        void Close(); 
+        void End();
+        void Begin();       
     } 
 }

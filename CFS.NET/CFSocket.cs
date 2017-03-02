@@ -7,14 +7,11 @@ using System.Net.Sockets;
 namespace CFS.Net
 {
     public class CFSocket : ICFSocket, IDisposable
-    {
-        public event EventHandler<ClientConnectEventArgs> OnConnect;
-        public event EventHandler<ClientDisconnectEventArgs> OnDisconnect;
+    { 
         public event EventHandler<SessionOpenEventArgs> OnOpen;
         public event EventHandler<SessionCloseEventArgs> OnClose;
-
         public event EventHandler<CFErrorEventArgs> OnError;
-        public event EventHandler<DataReceivedEventArgs> OnDataReceived;
+        public event EventHandler<DataReceivedEventArgs> OnReceived;
 
         protected TcpClient Connection;
 
@@ -36,24 +33,9 @@ namespace CFS.Net
         protected bool m_closed;
 
         private bool disposed = false;
-
-        private int timeout;
-        public int Timeout
-        {
-            get
-            {
-                return this.timeout;
-            }
-
-            set
-            {
-                this.timeout = value;
-
-                this.Connection.ReceiveTimeout = this.timeout * 1000;
-                this.Connection.SendTimeout = this.timeout * 1000;
-            }
-        } 
-
+ 
+        public int Timeout { get; set; }
+      
         public ICFCrypto Cipher { get; set; }
         public bool Encryption { get; set; }
          
@@ -90,6 +72,7 @@ namespace CFS.Net
 
         public CFSocket()
         {
+            this.Timeout = 20;
         }
 
         public void Connect(int second)
@@ -106,52 +89,69 @@ namespace CFS.Net
         {
             this.m_closed = false;
 
+            this.Connection.Client.ReceiveTimeout = this.Timeout * 1000;
+            this.Connection.Client.SendTimeout = this.Timeout * 1000;
+
             this.stream = new CFStream(this.Connection.GetStream());
 
-            this.onSessionOpen(new SessionOpenEventArgs());
+            if (OnOpen != null)
+            {
+                OnOpen(this, new SessionOpenEventArgs());
+            } 
+        }
+
+        public void Abort()
+        {
+            if (!this.m_closed)
+            { 
+                if (this.stream != null)
+                    this.stream.Close();
+
+                this.Connection.Close();
+
+                this.m_closed = true;              
+            }
         }
 
         public void Close()
         {
-            if (!this.m_closed)
+            this.Abort(); 
+
+            if (OnClose != null)
             {
-                this.m_closed = true;
-
-                this.stream.Close();
-                this.Connection.Close();
-
-                this.onSessionClose(new SessionCloseEventArgs(this.ID));                
-            }
+                OnClose(this, new SessionCloseEventArgs(this.ID));
+            }             
         }
 
         public virtual string Receive()
-        { 
+        {
             if (this.m_closed)
-            {
-                return "";
-            }
+                throw new Exception("Connection closed."); 
 
             string data = this.stream.ReadLine();
- 
+
+            if (OnReceived != null)
+            {
+                OnReceived(this, new DataReceivedEventArgs(data));
+            }
+
             if (Encryption)
             {
                 data = this.Cipher.Decrypt(data);
             } 
 
-            if (!string.IsNullOrEmpty(data))
-            {
-                this.onDataReceived(new DataReceivedEventArgs(data));                 
-            }
-                
             return data;                        
         }
 
+        public void Send(ICFMessage message)
+        {
+            this.Send(message.ToString());
+        }
+ 
         public virtual void Send(string data)
         {
             if (this.m_closed)
-            {
-                return;
-            }
+                throw new Exception("Connection closed.");
 
             if (Encryption)
             {
@@ -161,47 +161,7 @@ namespace CFS.Net
             this.stream.WriteLine(data);                        
         }
 
-        #region
-        protected void onConnect(object sender, ClientConnectEventArgs e)
-        {
-            if (OnConnect != null)
-            {
-                OnConnect(sender, e);
-            }
-        }
-         
-        protected void onDisconnect(ClientDisconnectEventArgs e)
-        {
-            if (OnDisconnect != null)
-            {
-                OnDisconnect(this, e);
-            }
-        }
-
-        protected void onSessionOpen(SessionOpenEventArgs e)
-        {
-            if (OnOpen != null)
-            {
-                OnOpen(this, e);
-            }
-        }
-
-        private void onSessionClose(SessionCloseEventArgs e)
-        {
-            if (OnClose != null)
-            {
-                OnClose(this, e);
-            }
-        }
-
-        protected void onDataReceived(DataReceivedEventArgs e)
-        {
-            if (OnDataReceived != null)
-            {
-                OnDataReceived(this, e);
-            }
-        }
-
+        #region Event
         protected void onSocketError(CFErrorEventArgs e)
         {
             if (OnError != null)

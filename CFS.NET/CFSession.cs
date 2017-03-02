@@ -31,7 +31,9 @@ namespace CFS.Net
 
             this.Open();
         }
-  
+
+        public abstract void Begin();
+
         public virtual void End()
         {
             this.m_stop = true;

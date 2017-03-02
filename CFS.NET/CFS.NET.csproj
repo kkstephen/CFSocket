@@ -36,7 +36,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CFEvent.cs" />
+    <Compile Include="CFSException.cs" />
+    <Compile Include="CFSMessage.cs" />
     <Compile Include="CFSocket.cs" />
+    <Compile Include="CFSProtocol.cs" />
     <Compile Include="CFStream.cs" />
     <Compile Include="ICFCrypto.cs" />
     <Compile Include="ICFServer.cs" />

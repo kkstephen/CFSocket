@@ -17,7 +17,8 @@ namespace CFS.Net
         public event EventHandler<ClientConnectEventArgs> OnConnect;
         public event EventHandler<ClientDisconnectEventArgs> OnDisconnect;
         public event EventHandler<CFErrorEventArgs> OnServerError;
-        public event EventHandler<CFErrorEventArgs> OnClientError;         
+        public event EventHandler<CFErrorEventArgs> OnClientError;
+        public event EventHandler<DataReceivedEventArgs> OnDataReceived;
 
         private TcpListener m_listener;
  
@@ -105,7 +106,7 @@ namespace CFS.Net
             }
         }
         
-        public abstract void Process(TcpClient client);
+        public abstract void Add(TcpClient client);
 
         public async virtual void Run()
         {             
@@ -115,7 +116,7 @@ namespace CFS.Net
                 {                                        
                     var tcpclient = await this.m_listener.AcceptTcpClientAsync();
 
-                    this.Process(tcpclient);                          
+                    this.Add(tcpclient);                          
                 }             
             }
             catch(Exception)
@@ -152,7 +153,7 @@ namespace CFS.Net
             foreach (var session in this.Sessions.Values)
             {
                 if (session.IsAlive)
-                    session.Close();
+                    session.Abort();
             }                  
         }
 
@@ -162,7 +163,7 @@ namespace CFS.Net
 
             if (this.Sessions.TryGetValue(sessionId, out session))
             {
-                session.Close();
+                session.Abort();
             } 
         }
 
@@ -170,9 +171,9 @@ namespace CFS.Net
         {
             if (session != null)
             {
-                session.Close();
-                session.Dispose();
+                session.Abort();
 
+                session.Dispose();
                 session = null;
             }
         }
@@ -186,25 +187,22 @@ namespace CFS.Net
             }
         }
 
-        protected void Session_Close(object sender, SessionCloseEventArgs e)
+        protected void Client_Disconnect(ClientDisconnectEventArgs e)
         {
-            ICFSession session = null;
-
-            if (this.Sessions.TryRemove(e.ID, out session))
-            { 
-                if (OnDisconnect != null)
-                {
-                    OnDisconnect(sender, new ClientDisconnectEventArgs(session.Host, session.Port));                    
-                }
-
-                this.Terminate(session);
-            }
-            else
+            if (OnDisconnect != null)
             {
-                this.Server_Error(this, new CFErrorEventArgs("Session remove fail: " + e.ID));
+                OnDisconnect(this, e);
             }
         }
 
+        protected void Client_DataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (OnDataReceived != null)
+            {
+                OnDataReceived(sender, e);
+            }
+        }
+ 
         protected void Client_Error(object sender, CFErrorEventArgs e)
         {
             if (OnClientError != null)
