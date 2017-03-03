@@ -20,7 +20,12 @@ namespace CFS.Net
 
         public CFSession(Socket socket)
         {
-            this.Socket = socket; 
+            this.Socket = socket;
+
+            var remoteHost = socket.RemoteEndPoint as IPEndPoint;
+
+            this.Host = remoteHost.Address.ToString();
+            this.Port = remoteHost.Port;
 
             this.Message = new CFSClientMessage();
 
