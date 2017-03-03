@@ -87,7 +87,10 @@ namespace CFS.Net
 
             this.m_closed = false;
 
-            this.onSessionOpen(new SessionOpenEventArgs());
+            if (OnOpen != null)
+            {
+                OnOpen(this, new SessionOpenEventArgs());
+            }
         }
 
         public virtual void Abort()
@@ -144,15 +147,7 @@ namespace CFS.Net
 
         public abstract void ReadMessage();       
 
-        #region Event              
-        protected void onSessionOpen(SessionOpenEventArgs e)
-        {
-            if (OnOpen != null)
-            {
-                OnOpen(this, e);
-            }
-        }
-
+        #region Event         
         protected void onSocketError(CFErrorEventArgs e)
         {
             if (OnError != null)
