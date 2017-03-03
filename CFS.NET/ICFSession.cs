@@ -3,15 +3,16 @@ using System.Net;
 
 namespace CFS.Net
 {
-    public interface ICFSession : ICFSocket, IDisposable
+    public interface ICFSession : IDisposable
     {
+        bool IsAlive { get; }
+
         string Host { get; }
         int Port { get; }
-        bool IsAlive { get; } 
-       
+               
         void Start(); 
-        void End();
         void Begin();
-        void Abort(); 
+        void Abort();
+        void End();
     } 
 }

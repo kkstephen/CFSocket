@@ -5,7 +5,7 @@ using System.Net.Sockets;
 
 namespace CFS.Net
 {
-    public class CFStream : IDisposable
+    public class CFStream : ICFStream, IDisposable
     {
         private NetworkStream _netStream;
         private StreamReader _sr;
@@ -13,10 +13,6 @@ namespace CFS.Net
 
         private bool disposed = false;
  
-        public ICFCrypto Cipher { get; set; }
-
-        public bool Encryption { get; set; }
-
         protected virtual void Dispose(bool disposing)
         {
             if (!this.disposed)
@@ -54,9 +50,9 @@ namespace CFS.Net
             GC.SuppressFinalize(this);
         }
 
-        public CFStream(NetworkStream stream)
+        public CFStream(Socket socket)
         {
-            this._netStream = stream;
+            this._netStream = new NetworkStream(socket);                
 
             this._sr = new StreamReader(this._netStream);
             this._sw = new StreamWriter(this._netStream);

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CFS.Net
 {
-    public class CFSException : Exception
+    public class CFException : Exception
     { 
-        public CFSException(string error) : base(error)
+        public CFException(string error) : base(error)
         {
         }        
     }

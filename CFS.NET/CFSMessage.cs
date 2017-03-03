@@ -15,7 +15,7 @@ namespace CFS.Net
         public override void Parse(string str)
         {
             if (string.IsNullOrEmpty(str) || str.Length < 4)
-                throw new CFSException("invalid command");
+                throw new CFException("invalid command");
 
             this.Command = str.Substring(0, 4);
 
@@ -38,7 +38,7 @@ namespace CFS.Net
         public override void Parse(string str)
         {
             if (string.IsNullOrEmpty(str) || str.Length < 3)
-                throw new CFSException("invalid status");
+                throw new CFException("invalid status");
 
             this.Status = str.Substring(0, 3);
 

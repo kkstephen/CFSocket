@@ -6,22 +6,40 @@ using System.Net.Sockets;
 
 namespace CFS.Net
 {
-    public abstract class CFSocket : ICFSocket, IDisposable
+    public abstract class CFConnection : ICFSocket, ICFConnection, IDisposable
     { 
         public event EventHandler<SessionOpenEventArgs> OnOpen;
         public event EventHandler<SessionCloseEventArgs> OnClose;
         public event EventHandler<CFErrorEventArgs> OnError;
         public event EventHandler<DataReceivedEventArgs> OnReceived;
-
-        protected TcpClient Connection { get; set; }
-        protected CFStream Stream { get; private set; }
+         
+        protected Socket Socket { get; set; }
+        protected ICFStream Stream { get; set; }
    
         public string ID { get; set; }
 
         public string Host { get; set; }
-        public int Port { get; set; }
-        
-        private bool m_closed;
+        public int Port { get; set; } 
+
+        private int timeout;
+        public int Timeout
+        {
+            get
+            {
+                return this.timeout;
+            }
+
+            set
+            {
+                this.timeout = value;
+
+                this.Socket.ReceiveTimeout = this.timeout * 1000;
+                this.Socket.SendTimeout = this.timeout * 1000;
+            }
+        }
+
+        protected string _data;
+        protected bool m_closed;
                
         private bool disposed = false;
 
@@ -38,10 +56,10 @@ namespace CFS.Net
                         this.Stream = null;
                     }
 
-                    if (this.Connection != null)
+                    if (this.Socket != null)
                     {
-                        this.Connection.Dispose();
-                        this.Connection = null;
+                        this.Socket.Dispose();
+                        this.Socket = null;
                     }
                 }
 
@@ -56,7 +74,7 @@ namespace CFS.Net
             GC.SuppressFinalize(this);
         }
 
-        public CFSocket()
+        public CFConnection()
         {
             this.ID = "";
 
@@ -65,14 +83,11 @@ namespace CFS.Net
 
         public virtual void Open()
         {
-            this.Stream = new CFStream(this.Connection.GetStream());
+            this.Stream = new CFStream(this.Socket);
 
             this.m_closed = false;
 
-            if (OnOpen != null)
-            {
-                OnOpen(this, new SessionOpenEventArgs());
-            }
+            this.onSessionOpen(new SessionOpenEventArgs());
         }
 
         public virtual void Abort()
@@ -82,7 +97,8 @@ namespace CFS.Net
                 if (this.Stream != null)
                     this.Stream.Close();
                 
-                this.Connection.Close();
+                if (this.Socket != null)
+                    this.Socket.Close();
 
                 this.m_closed = true;
             }
@@ -113,7 +129,7 @@ namespace CFS.Net
             return data;                        
         }
 
-        public void Send(ICFMessage message)
+        public virtual void Send(ICFMessage message)
         {
             this.Send(message.ToString());
         }
@@ -126,7 +142,17 @@ namespace CFS.Net
             this.Stream.WriteLine(data);                        
         }
 
+        public abstract void ReadMessage();       
+
         #region Event              
+        protected void onSessionOpen(SessionOpenEventArgs e)
+        {
+            if (OnOpen != null)
+            {
+                OnOpen(this, e);
+            }
+        }
+
         protected void onSocketError(CFErrorEventArgs e)
         {
             if (OnError != null)

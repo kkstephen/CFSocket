@@ -106,7 +106,7 @@ namespace CFS.Net
             }
         }
         
-        public abstract void Add(TcpClient client);
+        public abstract void Add(Socket socket);
 
         public async virtual void Run()
         {             
@@ -114,9 +114,9 @@ namespace CFS.Net
             {
                 while (!this.m_stop)
                 {                                        
-                    var tcpclient = await this.m_listener.AcceptTcpClientAsync();
+                    var socket = await this.m_listener.AcceptSocketAsync();
 
-                    this.Add(tcpclient);                          
+                    this.Add(socket);                          
                 }             
             }
             catch(Exception)

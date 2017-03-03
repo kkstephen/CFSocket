@@ -35,19 +35,21 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CFClient.cs" />
     <Compile Include="CFEvent.cs" />
-    <Compile Include="CFSException.cs" />
+    <Compile Include="CFSession.cs" />
+    <Compile Include="CFException.cs" />
     <Compile Include="CFSMessage.cs" />
-    <Compile Include="CFSocket.cs" />
+    <Compile Include="CFConnection.cs" />
     <Compile Include="CFSProtocol.cs" />
     <Compile Include="CFStream.cs" />
-    <Compile Include="ICFCrypto.cs" />
     <Compile Include="ICFServer.cs" />
     <Compile Include="ICFSession.cs" />
-    <Compile Include="ICFSocket.cs" />
+    <Compile Include="ICFConnection.cs" />
     <Compile Include="CFServer.cs" />
-    <Compile Include="CFSession.cs" />
     <Compile Include="ICFMessage.cs" />
+    <Compile Include="ICFSocket.cs" />
+    <Compile Include="ICFStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -4,8 +4,8 @@ using System.Net.Sockets;
 
 namespace CFS.Net
 {
-    public abstract class CFSession : CFSocket, ICFSession 
-    {
+    public abstract class CFSession : CFConnection, ICFSession 
+    { 
         private bool m_stop;
 
         public bool IsAlive
@@ -14,23 +14,15 @@ namespace CFS.Net
             {
                 return !this.m_stop;
             }
-        }
+        } 
 
-        private int timeout; 
-        public int Timeout
+        public CFSClientMessage Message { get; set; }
+
+        public CFSession(Socket socket)
         {
-            set
-            {
-                this.timeout = value;
+            this.Socket = socket; 
 
-                this.Connection.ReceiveTimeout = this.timeout * 1000;
-                this.Connection.SendBufferSize = this.timeout * 1000;
-            }
-        }
-
-        public CFSession(TcpClient client) 
-        {
-            this.Connection = client; 
+            this.Message = new CFSClientMessage();
 
             this.m_stop = true;   
         }
@@ -40,7 +32,7 @@ namespace CFS.Net
             this.m_stop = false;            
 
             this.Open();
-        }
+        } 
 
         public abstract void Begin();
 
