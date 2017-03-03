@@ -13,7 +13,7 @@ namespace CFS.Net
         public event EventHandler<CFErrorEventArgs> OnError;
         public event EventHandler<DataReceivedEventArgs> OnReceived;
          
-        protected Socket Socket { get; set; }
+        public Socket Socket { get; set; }
         protected ICFStream Stream { get; set; }
    
         public string ID { get; set; }

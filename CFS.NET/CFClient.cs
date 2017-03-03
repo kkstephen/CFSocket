@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net.Sockets;
 
 namespace CFS.Net
 {
@@ -13,6 +14,8 @@ namespace CFS.Net
         public CFClient()
         {
             this.Message = new CFSServerMessage();
+
+            this.Socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
         }
 
         public abstract void Connect(); 
