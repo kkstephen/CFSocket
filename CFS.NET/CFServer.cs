@@ -61,7 +61,7 @@ namespace CFS.Net
                 if (disposing)
                 {
                     // dispose managed resources 
-                    this.shutdown();
+                    this.close();
 
                     if (this.Sessions != null)
                     {
@@ -134,10 +134,10 @@ namespace CFS.Net
         {
             this.m_stop = true;
 
-            this.shutdown();            
+            this.close();            
         }
 
-        private void shutdown()
+        private void close()
         {
             if (this.m_listener != null)
             {                
@@ -157,7 +157,7 @@ namespace CFS.Net
             }                  
         }
 
-        public void Abort(string sessionId)
+        public void Abandon(string sessionId)
         {
             ICFSession session = null;
 

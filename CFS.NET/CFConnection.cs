@@ -146,12 +146,19 @@ namespace CFS.Net
 
             string data = this.Stream.ReadLine();
 
-            if (OnReceived != null)
+            if (string.IsNullOrEmpty(data))
             {
-                OnReceived(this, new DataReceivedEventArgs(data));
+                throw new Exception("No data read from stream.");
             }
+            else
+            {
+                if (OnReceived != null)
+                {
+                    OnReceived(this, new DataReceivedEventArgs(data));
+                }
 
-            return data;
+                return data;
+            }
         }
 
         public virtual ICFMessage ReceiveMessage()
