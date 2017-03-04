@@ -108,13 +108,13 @@ namespace CFS.Net
         
         public abstract void Add(Socket socket);
 
-        public async virtual void Run()
+        public virtual void Run()
         {             
             try
             {
                 while (!this.m_stop)
                 {                                        
-                    var socket = await this.m_listener.AcceptSocketAsync();
+                    var socket = this.m_listener.AcceptSocket();
 
                     this.Add(socket);                          
                 }             

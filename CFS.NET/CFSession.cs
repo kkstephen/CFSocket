@@ -7,7 +7,6 @@ namespace CFS.Net
     public abstract class CFSession : CFConnection, ICFSession 
     { 
         private bool m_stop;
-
         public bool IsAlive
         {
             get
@@ -15,9 +14,7 @@ namespace CFS.Net
                 return !this.m_stop;
             }
         } 
-
-        public CFSClientMessage Message { get; set; }
-
+ 
         public CFSession(Socket socket)
         {
             this.Socket = socket;
@@ -26,8 +23,8 @@ namespace CFS.Net
 
             this.Host = remoteHost.Address.ToString();
             this.Port = remoteHost.Port;
-
-            this.Message = new CFSClientMessage();
+ 
+            this.Encoder = new CFClientMessageEncoder();
 
             this.m_stop = true;   
         }

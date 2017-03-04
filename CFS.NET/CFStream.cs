@@ -7,10 +7,12 @@ namespace CFS.Net
 {
     public class CFStream : ICFStream, IDisposable
     {
+        private static readonly string LF = "\r\n";
+
         private NetworkStream _netStream;
         private StreamReader _sr;
         private StreamWriter _sw;
-
+         
         private bool disposed = false;
  
         protected virtual void Dispose(bool disposing)
@@ -66,16 +68,6 @@ namespace CFS.Net
             this._sw.Close();
         }
 
-        public string ReadAll()
-        {
-            if (this._netStream.CanRead)
-            {
-                return this._sr.ReadToEnd();
-            }
-
-            throw new IOException("Network stream can not read data");
-        }
-
         public string ReadLine()
         {
             if (this._netStream.CanRead)
@@ -83,7 +75,7 @@ namespace CFS.Net
                 return this._sr.ReadLine(); 
             }
 
-            throw new IOException("Network stream can not read data");
+            throw new IOException("Network stream can not to read data");
         }
 
         public void Write(string data)
@@ -95,13 +87,13 @@ namespace CFS.Net
             }
             else
             {
-                throw new IOException("Network stream can not send data");
+                throw new IOException("Network stream can not to send data");
             }
         }
 
         public void WriteLine(string data)
         {
-            this.Write(data + "\r\n");
+            this.Write(data + LF);
         }
     }
 }

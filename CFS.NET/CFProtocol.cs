@@ -2,7 +2,7 @@
  
 namespace CFS.Net
 {
-    public class CFSProtocol
+    public class CFProtocol
     { 
         public const string OK = "200";
         public const string Success = "220";

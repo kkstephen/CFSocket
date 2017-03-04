@@ -38,8 +38,17 @@ namespace CFS.Net
             }
         }
 
-        protected string _data;
-        protected bool m_closed;
+        protected string recv_data;
+        protected ICFMessageEncoder Encoder; 
+
+        private bool m_closed;
+        public bool IsClosed
+        {
+            get
+            {
+                return this.m_closed;
+            }
+        }        
                
         private bool disposed = false;
 
@@ -115,27 +124,7 @@ namespace CFS.Net
             {
                 OnClose(this, new SessionCloseEventArgs(this.ID));
             }
-        }
-
-        public virtual string Receive()
-        {
-            if (this.m_closed)
-                throw new Exception("Connection closed."); 
-
-            string data = this.Stream.ReadLine();
-
-            if (OnReceived != null)
-            {
-                OnReceived(this, new DataReceivedEventArgs(data));
-            }
-
-            return data;                        
-        }
-
-        public virtual void Send(ICFMessage message)
-        {
-            this.Send(message.ToString());
-        }
+        } 
  
         public virtual void Send(string data)
         {
@@ -145,7 +134,32 @@ namespace CFS.Net
             this.Stream.WriteLine(data);                        
         }
 
-        public abstract void ReadMessage();       
+        public virtual void SendMessage(ICFMessage message)
+        {
+            this.Send(message.ToString());
+        }
+
+        public virtual string Receive()
+        {
+            if (this.m_closed)
+                throw new Exception("Connection closed.");
+
+            string data = this.Stream.ReadLine();
+
+            if (OnReceived != null)
+            {
+                OnReceived(this, new DataReceivedEventArgs(data));
+            }
+
+            return data;
+        }
+
+        public virtual ICFMessage ReceiveMessage()
+        {
+            this.recv_data = this.Receive();
+
+            return this.Encoder.Decode(this.recv_data);
+        }       
 
         #region Event         
         protected void onSocketError(CFErrorEventArgs e)

@@ -11,8 +11,8 @@ namespace CFS.Net
         int Port { get; }
                
         void Start(); 
-        void Begin();
-        void Abort();
+        void Begin(); 
         void End();
+        void Abort();
     } 
 }
