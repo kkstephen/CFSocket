@@ -7,7 +7,7 @@ namespace CFS.Net
 {
     public class CFStream : ICFStream, IDisposable
     {
-        private static readonly string LF = "\r\n";
+        private static readonly string EL = "\r\n";
 
         private NetworkStream _netStream;
         private StreamReader _sr;
@@ -68,6 +68,16 @@ namespace CFS.Net
             this._sw.Close();
         }
 
+        public string Read()
+        {
+            if (this._netStream.CanRead)
+            { 
+                return this._sr.ReadToEnd();
+            }
+
+            throw new IOException("Network stream can not to read data");
+        }
+
         public string ReadLine()
         {
             if (this._netStream.CanRead)
@@ -93,7 +103,7 @@ namespace CFS.Net
 
         public void WriteLine(string data)
         {
-            this.Write(data + LF);
+            this.Write(data + EL);
         }
     }
 }
