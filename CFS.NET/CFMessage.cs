@@ -4,26 +4,40 @@ namespace CFS.Net
 {
     public abstract class CFMessage : ICFMessage
     {
-        public string Data { get; set; }        
+        public string Data { get; set; }
     }
         
     public class CFClientMessage : CFMessage
     {
-        public string Command { get; set; }
- 
-        public override string ToString()
+        public string Method { get; set; }
+
+        public CFClientMessage()
         {
-            return string.Format("{0} {1}", Command, Data);
+            this.Method = "";
+            this.Data = "";
         }
+
+        public CFClientMessage(string method, string content)
+        {
+            this.Method = method;
+            this.Data = content;
+        } 
     }
 
     public class CFServerMessage : CFMessage
     {
-        public string Status { get; set; } 
+        public string Response { get; set; }
 
-        public override string ToString()
+        public CFServerMessage()
         {
-            return string.Format("{0} {1}", Status, Data);
+            this.Response = "";
+            this.Data = "";
+        }
+
+        public CFServerMessage(string response, string content)
+        {
+            this.Response = response;
+            this.Data = content;
         }
     }
 }

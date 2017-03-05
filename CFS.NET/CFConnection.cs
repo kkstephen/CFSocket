@@ -131,12 +131,14 @@ namespace CFS.Net
             if (this.m_closed)
                 throw new Exception("Connection closed.");
             
-            this.Stream.WriteLine(data);                        
+            this.Stream.Write(data);                        
         }
 
         public virtual void SendMessage(ICFMessage message)
         {
-            this.Send(message.ToString());
+            string data = this.Encoder.Encode(message);
+
+            this.Send(data);
         }
 
         public virtual string Receive()

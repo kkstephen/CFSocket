@@ -2,14 +2,12 @@
  
 namespace CFS.Net
 {
-    public class CFProtocol
+    public abstract class CFProtocol : ICFProtocol
     { 
-        public const string OK = "200";
-        public const string Success = "220";
-        public const string GZip = "250";
-        public const string AUTH = "300";
-        public const string Unkonw = "400";        
-        public const string Error = "500";
-        public const string Fail = "550";
+        public int MethodOffet { get; }
+        public int ResponseOffset { get; }
+        public string EndLine { get; }
+
+        public abstract string GetMessageFormat();       
     }
 }

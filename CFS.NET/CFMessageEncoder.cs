@@ -8,42 +8,61 @@ namespace CFS.Net
 {
     public abstract class CFMessageEncoder : ICFMessageEncoder
     {
+        public ICFProtocol Protocol { get; set; }
+
         public abstract ICFMessage Decode(string str);        
+        public abstract string Encode(ICFMessage message);
     }
 
     public class CFServerMessageEncoder : CFMessageEncoder
     { 
+        public CFServerMessageEncoder(ICFProtocol protocol)
+        {
+            this.Protocol = protocol;
+        }
+
         public override ICFMessage Decode(string data)
         {        
-            if (string.IsNullOrEmpty(data) || data.Length < 3)
+            if (string.IsNullOrEmpty(data) || data.Length < this.Protocol.ResponseOffset)
                 throw new CFException("Invalid data to decode");
 
             CFServerMessage message = new CFServerMessage();
              
-            message.Status = data.Substring(0, 3);
-
-            if (data.Length > 3)
-                message.Data = data.Substring(4);
+            message.Response = data.Substring(0, this.Protocol.ResponseOffset);
+            message.Data = data.Substring(this.Protocol.ResponseOffset + 1);
 
             return message;
+        }
+
+        public override string Encode(ICFMessage message)
+        {
+            return string.Format(this.Protocol.GetMessageFormat(), message); 
         }
     }
 
     public class CFClientMessageEncoder : CFMessageEncoder
     {
+        public CFClientMessageEncoder(ICFProtocol protocol)
+        {
+            this.Protocol = protocol;
+        }
+
         public override ICFMessage Decode(string data)
         {
-            if (string.IsNullOrEmpty(data) || data.Length < 4)
+            if (string.IsNullOrEmpty(data) || data.Length < this.Protocol.MethodOffet)
                 throw new CFException("Invalid data to decode");
 
             CFClientMessage message = new CFClientMessage();
 
-            message.Command = data.Substring(0, 4);
-
-            if (data.Length > 4)
-                message.Data = data.Substring(5);
+            message.Method = data.Substring(0, this.Protocol.MethodOffet);
+            message.Data = data.Substring(this.Protocol.MethodOffet + 1);
 
             return message;
+        }
+
+        public override string Encode(ICFMessage message)
+        {
+            return string.Format(this.Protocol.GetMessageFormat(), message);
         }
     }
 }

@@ -14,18 +14,18 @@ namespace CFS.Net
                 return !this.m_stop;
             }
         } 
+
+        public CFClientMessage Message { get; set; }
  
-        public CFSession(Socket socket)
+        public CFSession(Socket socket) 
         {
             this.Socket = socket;
-
+ 
             var remoteHost = socket.RemoteEndPoint as IPEndPoint;
 
             this.Host = remoteHost.Address.ToString();
             this.Port = remoteHost.Port;
  
-            this.Encoder = new CFClientMessageEncoder();
-
             this.m_stop = true;   
         }
         
@@ -34,13 +34,21 @@ namespace CFS.Net
             this.m_stop = false;            
 
             this.Open();
-        } 
+        }
 
         public abstract void Begin();
+
+        public abstract bool Authenticate();
+        public abstract void HandleProtocol();
 
         public virtual void End()
         {
             this.m_stop = true;
         } 
+
+        public virtual void GetClientMessage()
+        {
+            this.Message = this.ReceiveMessage() as CFClientMessage;
+        }            
     }
 }

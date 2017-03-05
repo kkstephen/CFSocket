@@ -5,11 +5,11 @@ using System.Net.Sockets;
 namespace CFS.Net
 {
     public abstract class CFClient : CFConnection 
-    {   
-        public CFClient()
-        {            
-            this.Encoder = new CFClientMessageEncoder();
+    {
+        public CFServerMessage Message { get; set; }
 
+        public CFClient()
+        {  
             this.Socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
         }
  
@@ -31,6 +31,11 @@ namespace CFS.Net
             {
                 throw new Exception("Connect remote host fail.");
             }
-        } 
+        }
+
+        public virtual void GetServerMessage()
+        {
+            this.Message = this.ReceiveMessage() as CFServerMessage;
+        }
     }
 }
