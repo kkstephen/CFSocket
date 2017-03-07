@@ -38,12 +38,14 @@
     <Compile Include="CFClient.cs" />
     <Compile Include="CFEvent.cs" />
     <Compile Include="CFMessageEncoder.cs" />
+    <Compile Include="CFMessageFactory.cs" />
     <Compile Include="CFSession.cs" />
     <Compile Include="CFException.cs" />
     <Compile Include="CFMessage.cs" />
     <Compile Include="CFConnection.cs" />
     <Compile Include="CFProtocol.cs" />
     <Compile Include="CFStream.cs" />
+    <Compile Include="ICFMessageFactory.cs" />
     <Compile Include="ICFProtocol.cs" />
     <Compile Include="ICFServer.cs" />
     <Compile Include="ICFSession.cs" />
@@ -52,6 +54,7 @@
     <Compile Include="ICFMessage.cs" />
     <Compile Include="ICFSocket.cs" />
     <Compile Include="ICFStream.cs" />
+    <Compile Include="MessageName.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

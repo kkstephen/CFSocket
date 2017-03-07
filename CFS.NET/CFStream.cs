@@ -67,17 +67,7 @@ namespace CFS.Net
             this._sr.Close();
             this._sw.Close();
         }
-
-        public string Read()
-        {
-            if (this._netStream.CanRead)
-            { 
-                return this._sr.ReadToEnd();
-            }
-
-            throw new IOException("Network stream can not to read data");
-        }
-
+ 
         public string ReadLine()
         {
             if (this._netStream.CanRead)

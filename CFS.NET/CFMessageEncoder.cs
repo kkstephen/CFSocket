@@ -6,63 +6,63 @@ using System.Threading.Tasks;
 
 namespace CFS.Net
 {
-    public abstract class CFMessageEncoder : ICFMessageEncoder
+    public class CFServerMessageEncoder : ICFMessageEncoder
     {
         public ICFProtocol Protocol { get; set; }
 
-        public abstract ICFMessage Decode(string str);        
-        public abstract string Encode(ICFMessage message);
-    }
-
-    public class CFServerMessageEncoder : CFMessageEncoder
-    { 
         public CFServerMessageEncoder(ICFProtocol protocol)
         {
             this.Protocol = protocol;
         }
 
-        public override ICFMessage Decode(string data)
-        {        
-            if (string.IsNullOrEmpty(data) || data.Length < this.Protocol.ResponseOffset)
-                throw new CFException("Invalid data to decode");
+        public virtual ICFMessage Decode(string data)
+        {
+            CFServerMessage message = this.Protocol.MessageFactory.Create(MessageName.SERVER) as CFServerMessage;
 
-            CFServerMessage message = new CFServerMessage();
+            if (string.IsNullOrEmpty(data) || data.Length < message.Offset)
+                throw new CFException("Invalid data to decode");
              
-            message.Response = data.Substring(0, this.Protocol.ResponseOffset);
-            message.Data = data.Substring(this.Protocol.ResponseOffset + 1);
+            message.Response = data.Substring(0, message.Offset);
+            message.Data = data.Substring(message.Offset + 1);
 
             return message;
         }
 
-        public override string Encode(ICFMessage message)
+        public virtual string Encode(ICFMessage message)
         {
-            return string.Format(this.Protocol.GetMessageFormat(), message); 
+            CFClientMessage sm = message as CFClientMessage;
+
+            return string.Format(this.Protocol.GetMessageFormat(), sm.Method, sm.Data); 
         }
     }
 
-    public class CFClientMessageEncoder : CFMessageEncoder
+    public class CFClientMessageEncoder : ICFMessageEncoder
     {
+        public ICFProtocol Protocol { get; set; }
+
         public CFClientMessageEncoder(ICFProtocol protocol)
         {
             this.Protocol = protocol;
         }
 
-        public override ICFMessage Decode(string data)
+        public virtual ICFMessage Decode(string data)
         {
-            if (string.IsNullOrEmpty(data) || data.Length < this.Protocol.MethodOffet)
+            CFClientMessage message = this.Protocol.MessageFactory.Create(MessageName.CLIENT) as CFClientMessage;
+
+            if (string.IsNullOrEmpty(data) || data.Length < message.Offset)
                 throw new CFException("Invalid data to decode");
 
-            CFClientMessage message = new CFClientMessage();
-
-            message.Method = data.Substring(0, this.Protocol.MethodOffet);
-            message.Data = data.Substring(this.Protocol.MethodOffet + 1);
+            message.Method = data.Substring(0, message.Offset);
+            message.Data = data.Substring(message.Offset + 1);
 
             return message;
         }
 
-        public override string Encode(ICFMessage message)
+        public virtual string Encode(ICFMessage message)
         {
-            return string.Format(this.Protocol.GetMessageFormat(), message);
+            CFServerMessage cm = message as CFServerMessage;
+
+            return string.Format(this.Protocol.GetMessageFormat(), cm.Response, cm.Data);
         }
     }
 }

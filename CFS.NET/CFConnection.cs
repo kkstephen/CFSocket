@@ -39,7 +39,7 @@ namespace CFS.Net
         }
 
         protected string recv_data;
-        protected ICFMessageEncoder Encoder; 
+        public ICFMessageEncoder Encoder { get; set; }
 
         private bool m_closed;
         public bool IsClosed

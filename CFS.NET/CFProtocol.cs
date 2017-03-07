@@ -4,10 +4,11 @@ namespace CFS.Net
 {
     public abstract class CFProtocol : ICFProtocol
     { 
-        public int MethodOffet { get; }
-        public int ResponseOffset { get; }
-        public string EndLine { get; }
+        public int MethodOffset { get; set; }         
+        public int ResponseOffset { get; set; }
+        public string EndLine { get; set; }
 
-        public abstract string GetMessageFormat();       
+        public ICFMessageFactory MessageFactory { get; set; }
+        public abstract string GetMessageFormat(); 
     }
 }

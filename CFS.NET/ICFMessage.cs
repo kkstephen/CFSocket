@@ -4,6 +4,7 @@ namespace CFS.Net
 {
     public interface ICFMessage
     {
+        int Offset { get; }
         string Data { get; }         
     }
 

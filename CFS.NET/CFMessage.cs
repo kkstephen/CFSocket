@@ -4,6 +4,7 @@ namespace CFS.Net
 {
     public abstract class CFMessage : ICFMessage
     {
+        public int Offset { get; set; }
         public string Data { get; set; }
     }
         
@@ -11,8 +12,10 @@ namespace CFS.Net
     {
         public string Method { get; set; }
 
-        public CFClientMessage()
+        public CFClientMessage(int offset)
         {
+            this.Offset = offset;
+
             this.Method = "";
             this.Data = "";
         }
@@ -28,8 +31,10 @@ namespace CFS.Net
     {
         public string Response { get; set; }
 
-        public CFServerMessage()
+        public CFServerMessage(int offset)
         {
+            this.Offset = offset;
+
             this.Response = "";
             this.Data = "";
         }
