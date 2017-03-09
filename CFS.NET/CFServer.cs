@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Text;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CFS.Net
 {
@@ -44,11 +40,8 @@ namespace CFS.Net
 
         private static readonly object _object = new object();
 
-        public CFServer(string host, int port)
+        public CFServer()
         {
-            this.Port = port;
-            this.Host = host;      
-
             this.m_stop = true;
 
             this.Sessions = new ConcurrentDictionary<string, ICFSession>(); 

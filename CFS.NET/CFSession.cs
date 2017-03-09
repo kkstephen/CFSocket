@@ -36,7 +36,7 @@ namespace CFS.Net
             this.Open();
         }
 
-        public virtual void Begin()
+        public void Begin()
         {
             if (this.Authorize())
             {

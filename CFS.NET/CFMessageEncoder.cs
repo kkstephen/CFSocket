@@ -20,10 +20,14 @@ namespace CFS.Net
             CFServerMessage message = this.Protocol.MessageFactory.Create(MessageName.SERVER) as CFServerMessage;
 
             if (string.IsNullOrEmpty(data) || data.Length < message.Offset)
-                throw new CFException("Invalid data to decode");
+                throw new Exception("Invalid data to decode");
              
             message.Response = data.Substring(0, message.Offset);
-            message.Data = data.Substring(message.Offset + 1);
+
+            if (data.Length > message.Offset)
+            {
+                message.Data = data.Substring(message.Offset + 1);
+            }
 
             return message;
         }
@@ -50,10 +54,14 @@ namespace CFS.Net
             CFClientMessage message = this.Protocol.MessageFactory.Create(MessageName.CLIENT) as CFClientMessage;
 
             if (string.IsNullOrEmpty(data) || data.Length < message.Offset)
-                throw new CFException("Invalid data to decode");
+                throw new Exception("Invalid data to decode");
 
             message.Method = data.Substring(0, message.Offset);
-            message.Data = data.Substring(message.Offset + 1);
+
+            if (data.Length > message.Offset)
+            {
+                message.Data = data.Substring(message.Offset + 1);
+            }
 
             return message;
         }

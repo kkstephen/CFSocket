@@ -147,20 +147,13 @@ namespace CFS.Net
                 throw new Exception("Connection closed.");
 
             string data = this.Stream.ReadLine();
-
-            if (string.IsNullOrEmpty(data))
+             
+            if (!string.IsNullOrEmpty(data) && OnReceived != null)
             {
-                throw new Exception("No data read from stream.");
-            }
-            else
-            {
-                if (OnReceived != null)
-                {
-                    OnReceived(this, new DataReceivedEventArgs(data));
-                }
+                OnReceived(this, new DataReceivedEventArgs(data));
+            } 
 
-                return data;
-            }
+            return data;                    
         }
 
         public virtual ICFMessage ReceiveMessage()
