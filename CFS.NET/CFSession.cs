@@ -14,9 +14,7 @@ namespace CFS.Net
                 return !this.m_stop;
             }
         }
-
-        public CFClientMessage Message { get; set; }
-
+ 
         public CFSession(Socket socket)
         {
             this.Socket = socket;
@@ -55,9 +53,6 @@ namespace CFS.Net
             this.m_stop = true;
         }
 
-        public virtual void GetClientMessage()
-        {
-            this.Message = this.ReceiveMessage() as CFClientMessage;
-        }
+        public abstract void GetClientMessage();       
     }
 }

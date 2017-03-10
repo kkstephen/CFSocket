@@ -5,9 +5,7 @@ using System.Net.Sockets;
 namespace CFS.Net
 {
     public abstract class CFClient : CFConnection 
-    {
-        public CFServerMessage Message { get; set; }
-
+    { 
         public CFClient()
         {  
             this.Socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
@@ -33,9 +31,6 @@ namespace CFS.Net
             }
         }
 
-        public virtual void GetServerMessage()
-        {
-            this.Message = this.ReceiveMessage() as CFServerMessage;
-        }
+        public abstract void GetServerMessage();       
     }
 }

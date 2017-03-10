@@ -6,7 +6,6 @@ namespace CFS.Net
     { 
         public int MethodOffset { get; set; }         
         public int ResponseOffset { get; set; }
-        public string EndLine { get; set; }
 
         public ICFMessageFactory MessageFactory { get; set; }
         public abstract string GetMessageFormat(); 
