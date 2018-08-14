@@ -7,7 +7,7 @@ namespace CFS.Net
 {
     public class CFStream : ICFStream, IDisposable
     {
-        private static readonly string EL = "\r\n";
+        private static readonly string CRLF = "\r\n";
 
         private NetworkStream _netStream;
         private StreamReader _sr;
@@ -24,26 +24,28 @@ namespace CFS.Net
                     // dispose managed resources
                     if (this._netStream != null)
                     {
-                        this._netStream.Dispose();
-                        this._netStream = null;
+                        this._netStream.Dispose();                       
                     }
 
                     if (this._sr != null)
                     {
-                        this._sr.Dispose();
-                        this._sr = null;
+                        this._sr.Dispose();                        
                     }
 
                     if (this._sw != null)
                     {
-                        this._sw.Dispose();
-                        this._sw = null;
+                        this._sw.Dispose();                        
                     }
                 }
 
+                // free native resources
+
+                this._netStream = null;
+                this._sr = null;
+                this._sw = null;
+                
                 this.disposed = true;
-            }
-            // free native resources
+            }            
         }
 
         public void Dispose()
@@ -93,7 +95,7 @@ namespace CFS.Net
 
         public void WriteLine(string data)
         {
-            this.Write(data + EL);
+            this.Write(data + CRLF);
         }
     }
 }

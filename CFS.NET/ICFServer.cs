@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace CFS.Net
 {
-    public interface ICFServer
+    public interface ICFServer : IDisposable
     {
         void Start();
         void Add(Socket socket);

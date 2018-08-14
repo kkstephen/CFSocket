@@ -8,10 +8,12 @@ namespace CFS.Net
 {
     public abstract class CFMessageEncoder : ICFMessageEncoder
     {
-        public ICFProtocol Protocol { get; set; }
+        protected MessageName Name;
+        protected string Format;
+
+        protected ICFProtocol Protocol { get; set; }
 
         public abstract ICFMessage Decode(string str);
-
         public abstract string Encode(ICFMessage message);    
     } 
 }

@@ -6,7 +6,7 @@ using System.Net.Sockets;
 
 namespace CFS.Net
 {
-    public abstract class CFServer : ICFServer, IDisposable
+    public abstract class CFServer : ICFServer
     { 
         public event EventHandler<ServerStartEventArgs> OnStart;
         public event EventHandler<ServerStopEventArgs> OnStop;
@@ -58,12 +58,13 @@ namespace CFS.Net
 
                     if (this.Sessions != null)
                     {
-                        this.Sessions.Clear();
-                        this.Sessions = null;
+                        this.Sessions.Clear();                       
                     }                          
                 }
 
                 // Free your own state (unmanaged objects).
+                this.Sessions = null;
+
                 this.disposed = true;
             }
         }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CFS.Net
 {
-    public interface ICFSocket
+    public interface ICFSocket : IDisposable
     {
         void Send(string data);
         string Receive();

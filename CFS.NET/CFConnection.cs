@@ -6,13 +6,14 @@ using System.Net.Sockets;
 
 namespace CFS.Net
 {
-    public abstract class CFConnection : ICFSocket, ICFConnection, IDisposable
+    public abstract class CFConnection : ICFSocket, ICFConnection
     { 
         public event EventHandler<SessionOpenEventArgs> OnOpen;
         public event EventHandler<SessionCloseEventArgs> OnClose;
         public event EventHandler<CFErrorEventArgs> OnError;
         public event EventHandler<DataReceivedEventArgs> OnReceived;
-         
+
+        public ICFMessageEncoder Encoder { get; set; }
         public Socket Socket { get; set; }
         protected ICFStream Stream { get; set; }
    
@@ -38,8 +39,7 @@ namespace CFS.Net
             }
         }
 
-        protected string recv_data;
-        public ICFMessageEncoder Encoder { get; set; }
+        protected string recv_data;      
 
         private bool m_closed;
         public bool IsClosed
@@ -61,20 +61,21 @@ namespace CFS.Net
                     // dispose managed resources
                     if (this.Stream != null)
                     {
-                        this.Stream.Dispose();
-                        this.Stream = null;
+                        this.Stream.Dispose();                       
                     }
 
                     if (this.Socket != null)
                     {
-                        this.Socket.Dispose();
-                        this.Socket = null;
+                        this.Socket.Dispose();                        
                     }
                 }
+                
+                // free native resources
+                this.Stream = null;
+                this.Socket = null;
 
                 this.disposed = true;
-            }
-            // free native resources
+            }            
         }
 
         public void Dispose()
@@ -124,22 +125,15 @@ namespace CFS.Net
             {
                 OnClose(this, new SessionCloseEventArgs(this.ID));
             }
-        } 
+        }
  
         public virtual void Send(string data)
         {
             if (this.m_closed)
                 throw new Exception("Connection closed.");
             
-            this.Stream.Write(data);                        
-        }
-
-        public virtual void SendMessage(ICFMessage message)
-        {
-            string data = this.Encoder.Encode(message);
-
-            this.Send(data);
-        }
+            this.Stream.WriteLine(data);   
+        } 
 
         public virtual string Receive()
         {
@@ -156,12 +150,19 @@ namespace CFS.Net
             return data;                    
         }
 
+        public virtual void SendMessage(ICFMessage message)
+        {
+            string data = this.Encoder.Encode(message);
+
+            this.Send(data);
+        }
+
         public virtual ICFMessage ReceiveMessage()
         {
             this.recv_data = this.Receive();
 
             return this.Encoder.Decode(this.recv_data);
-        }       
+        }
 
         #region Event         
         protected void onSocketError(CFErrorEventArgs e)
