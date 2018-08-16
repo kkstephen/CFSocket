@@ -4,10 +4,9 @@ namespace CFS.Net
 {
     public interface ICFProtocol
     { 
-        int MethodOffset { get; }
-        int ResponseOffset { get; }
-
+        string Format { get; }
         ICFMessageFactory MessageFactory { get; }
-        string GetMessageFormat();
+
+        string Translate(string status, string data);
     }
 }

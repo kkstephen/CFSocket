@@ -1,7 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Threading;
-using System.Net;
 using System.Net.Sockets;
 
 namespace CFS.Net
@@ -87,7 +84,6 @@ namespace CFS.Net
         public CFConnection()
         {
             this.ID = "";
-
             this.m_closed = true;
         }
 
@@ -132,7 +128,7 @@ namespace CFS.Net
             if (this.m_closed)
                 throw new Exception("Connection closed.");
             
-            this.Stream.WriteLine(data);   
+            this.Stream.Write(data);
         } 
 
         public virtual string Receive()
@@ -140,6 +136,7 @@ namespace CFS.Net
             if (this.m_closed)
                 throw new Exception("Connection closed.");
 
+            //message boundary: crlf
             string data = this.Stream.ReadLine();
              
             if (!string.IsNullOrEmpty(data) && OnReceived != null)
@@ -147,14 +144,14 @@ namespace CFS.Net
                 OnReceived(this, new DataReceivedEventArgs(data));
             } 
 
-            return data;                    
+            return data;
         }
 
         public virtual void SendMessage(ICFMessage message)
         {
-            string data = this.Encoder.Encode(message);
+            string body = this.Encoder.Encode(message);
 
-            this.Send(data);
+            this.Send(body + message.Boundary);
         }
 
         public virtual ICFMessage ReceiveMessage()

@@ -109,8 +109,8 @@ namespace CFS.Net
                 while (!this.m_stop)
                 {               
                     var socket = await this.m_listener.AcceptSocketAsync();
-
-                    this.Add(socket);                                  
+                   
+                    this.Add(socket);      
                 }
             }
             catch

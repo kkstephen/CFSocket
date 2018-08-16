@@ -37,15 +37,15 @@
   <ItemGroup>
     <Compile Include="CFClient.cs" />
     <Compile Include="CFEvent.cs" />
+    <Compile Include="CFMessage.cs" />
     <Compile Include="CFMessageEncoder.cs" />
-    <Compile Include="CFMessageFactory.cs" />
+    <Compile Include="CFProtocol.cs" />
     <Compile Include="CFSession.cs" />
     <Compile Include="CFException.cs" />
-    <Compile Include="CFMessage.cs" />
     <Compile Include="CFConnection.cs" />
-    <Compile Include="CFProtocol.cs" />
     <Compile Include="CFStream.cs" />
     <Compile Include="ICFClient.cs" />
+    <Compile Include="ICFMessageEncoder.cs" />
     <Compile Include="ICFMessageFactory.cs" />
     <Compile Include="ICFProtocol.cs" />
     <Compile Include="ICFServer.cs" />

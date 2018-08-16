@@ -3,11 +3,14 @@
 namespace CFS.Net
 {
     public abstract class CFProtocol : ICFProtocol
-    { 
-        public int MethodOffset { get; set; }         
-        public int ResponseOffset { get; set; }
-
+    {  
         public ICFMessageFactory MessageFactory { get; set; }
-        public abstract string GetMessageFormat(); 
+
+        public string Format { get; set; }
+
+        public string Translate(string status, string data)
+        {
+            return string.Format(this.Format, status, data);
+        }
     }
 }
