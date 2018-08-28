@@ -5,8 +5,7 @@ namespace CFS.Net
 {
     public interface ICFServer : IDisposable
     {
-        void Start();
-        void Add(Socket socket);
+        void Start();        
         void Run();
         void Stop();
         void Clear();

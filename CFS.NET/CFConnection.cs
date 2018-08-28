@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Sockets;
 
 namespace CFS.Net
@@ -6,9 +7,10 @@ namespace CFS.Net
     public abstract class CFConnection : ICFSocket, ICFConnection
     { 
         public event EventHandler<SessionOpenEventArgs> OnOpen;
-        public event EventHandler<SessionCloseEventArgs> OnClose;
+        public event EventHandler<SessionCloseEventArgs> OnClose;        
+        public event EventHandler<SessionDataEventArgs> OnReceived;
+        public event EventHandler<SessionDataEventArgs> OnSend;
         public event EventHandler<CFErrorEventArgs> OnError;
-        public event EventHandler<DataReceivedEventArgs> OnReceived;
 
         public ICFMessageEncoder Encoder { get; set; }
         public Socket Socket { get; set; }
@@ -85,6 +87,28 @@ namespace CFS.Net
         {
             this.ID = "";
             this.m_closed = true;
+
+            this.Socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+        }
+
+        public virtual void Connect()
+        {
+            IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(this.Host), this.Port);
+
+            var iasr = this.Socket.BeginConnect(remoteEP, null, null);
+
+            iasr.AsyncWaitHandle.WaitOne(this.Timeout);
+
+            if (iasr.IsCompleted)
+            {
+                this.Socket.EndConnect(iasr);
+
+                this.Open();
+            }
+            else
+            {
+                throw new Exception("Connect remote host fail.");
+            }
         }
 
         public virtual void Open()
@@ -95,7 +119,7 @@ namespace CFS.Net
 
             if (OnOpen != null)
             {
-                OnOpen(this, new SessionOpenEventArgs());
+                OnOpen(this, new SessionOpenEventArgs(this.Host, this.Port));
             }
         }
 
@@ -127,8 +151,13 @@ namespace CFS.Net
         {
             if (this.m_closed)
                 throw new Exception("Connection closed.");
-            
+
             this.Stream.Write(data);
+
+            if (!string.IsNullOrEmpty(data) && OnSend != null)
+            {
+                OnSend(this, new SessionDataEventArgs(data.Length));
+            }           
         } 
 
         public virtual string Receive()
@@ -141,7 +170,7 @@ namespace CFS.Net
              
             if (!string.IsNullOrEmpty(data) && OnReceived != null)
             {
-                OnReceived(this, new DataReceivedEventArgs(data));
+                OnReceived(this, new SessionDataEventArgs(data.Length));
             } 
 
             return data;

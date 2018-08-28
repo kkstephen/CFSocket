@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Net.Sockets;
 
 namespace CFS.Net
 {
@@ -14,14 +15,12 @@ namespace CFS.Net
     }
 
     public class ClientConnectEventArgs : CFEventArgs
-    { 
-        public string IP { get; private set; }
-        public int Port { get; private set; }
-
-        public ClientConnectEventArgs(string host, int port) : base("Client Connect")
-        { 
-            this.IP = host;
-            this.Port = port;
+    {
+        public Socket EndPoint { get; private set; }
+ 
+        public ClientConnectEventArgs(Socket socket) : base("Client Connect")
+        {
+            this.EndPoint = socket;     
         }
     } 
 
@@ -37,12 +36,26 @@ namespace CFS.Net
         } 
     }
 
-    public class SessionOpenEventArgs : CFEventArgs
+    public class SessionEventArgs : CFEventArgs
     {
-        public SessionOpenEventArgs() : base("Session Open")
+        public string IP { get; set; }
+        public int Port { get; set; }
+
+        public SessionEventArgs(string host, int port) : base("Session")
         {
+            this.IP = host;
+            this.Port = port;
         }
     }
+
+    public class SessionOpenEventArgs : SessionEventArgs
+    { 
+        public SessionOpenEventArgs(string host, int port) : base(host, port)
+        {
+            this.IP = host;
+            this.Port = port;
+        }
+    } 
 
     public class SessionCloseEventArgs : CFEventArgs
     {
@@ -54,10 +67,13 @@ namespace CFS.Net
         }
     }
 
-    public class DataReceivedEventArgs : CFEventArgs
+    public class SessionDataEventArgs : CFEventArgs
     { 
-        public DataReceivedEventArgs(string data) : base(data)
-        {             
+        public int Count { get; set; }
+
+        public SessionDataEventArgs(int count) : base("Data available")
+        {
+            this.Count = count;
         }
     }
     

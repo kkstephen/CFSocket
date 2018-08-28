@@ -14,7 +14,8 @@ namespace CFS.Net
         public event EventHandler<ClientDisconnectEventArgs> OnDisconnect;
         public event EventHandler<CFErrorEventArgs> OnServerError;
         public event EventHandler<CFErrorEventArgs> OnClientError;
-        public event EventHandler<DataReceivedEventArgs> OnDataReceived;
+        public event EventHandler<SessionDataEventArgs> OnDataReceived;
+        public event EventHandler<SessionDataEventArgs> OnDataSend;
 
         private TcpListener m_listener;
  
@@ -98,9 +99,7 @@ namespace CFS.Net
             {
                 this.Server_Error(this, new CFErrorEventArgs(ex.Message));
             }
-        }
-        
-        public abstract void Add(Socket socket);
+        } 
 
         public async void Run()
         {
@@ -109,8 +108,11 @@ namespace CFS.Net
                 while (!this.m_stop)
                 {               
                     var socket = await this.m_listener.AcceptSocketAsync();
-                   
-                    this.Add(socket);      
+
+                    if (OnConnect != null)
+                    {
+                        OnConnect(this, new ClientConnectEventArgs(socket));
+                    }
                 }
             }
             catch
@@ -173,15 +175,7 @@ namespace CFS.Net
             }
         }
 
-        #region Server Event  
-        protected void Client_Connect(ClientConnectEventArgs e)
-        {
-            if (OnConnect != null)
-            {
-                OnConnect(this, e);
-            }
-        }
-
+        #region Server Event         
         protected void Client_Disconnect(ClientDisconnectEventArgs e)
         {
             if (OnDisconnect != null)
@@ -190,14 +184,22 @@ namespace CFS.Net
             }
         }
 
-        protected void Client_DataReceived(object sender, DataReceivedEventArgs e)
+        protected void Client_DataReceived(object sender, SessionDataEventArgs e)
         {
             if (OnDataReceived != null)
             {
                 OnDataReceived(sender, e);
             }
         }
- 
+
+        protected void Client_DataSend(object sender, SessionDataEventArgs e)
+        {
+            if (OnDataSend != null)
+            {
+                OnDataSend(sender, e);
+            }
+        }
+
         protected void Client_Error(object sender, CFErrorEventArgs e)
         {
             if (OnClientError != null)
