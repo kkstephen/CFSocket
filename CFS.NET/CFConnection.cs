@@ -97,7 +97,7 @@ namespace CFS.Net
 
             var iasr = this.Socket.BeginConnect(remoteEP, null, null);
 
-            iasr.AsyncWaitHandle.WaitOne(this.Timeout);
+            iasr.AsyncWaitHandle.WaitOne(this.Timeout * 1000);
 
             if (iasr.IsCompleted)
             {

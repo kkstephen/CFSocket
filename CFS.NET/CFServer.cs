@@ -81,7 +81,7 @@ namespace CFS.Net
             this.Sessions.Clear();
                                     
             try
-            {
+            {                
                 var ep = new IPEndPoint(IPAddress.Parse(Host), Port);
 
                 this.m_listener = new TcpListener(ep);
