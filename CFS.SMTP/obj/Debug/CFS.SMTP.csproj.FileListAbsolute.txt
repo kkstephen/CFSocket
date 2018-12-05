@@ -6,3 +6,4 @@ C:\Users\Stephen\Documents\My Project\CFS\CFS.SMTP\obj\Debug\CFS.SMTP.csproj.Cor
 C:\Users\Stephen\Documents\My Project\CFS\CFS.SMTP\obj\Debug\CFS.SMTP.csproj.CopyComplete
 C:\Users\Stephen\Documents\My Project\CFS\CFS.SMTP\obj\Debug\CFS.SMTP.dll
 C:\Users\Stephen\Documents\My Project\CFS\CFS.SMTP\obj\Debug\CFS.SMTP.pdb
+C:\Users\Stephen\Documents\My Project\CFS\CFS.SMTP\obj\Debug\CFS.SMTP.csprojAssemblyReference.cache

@@ -41,11 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IRecipient.cs" />
     <Compile Include="MIME.cs" />
     <Compile Include="MNAttachment.cs" />
     <Compile Include="MNEventArgs.cs" />
     <Compile Include="MNMessage.cs" />
-    <Compile Include="MNRecipient.cs" />
     <Compile Include="CFSmtp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SMTPCmd.cs" />

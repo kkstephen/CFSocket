@@ -11,7 +11,7 @@ namespace CFS.SMTP
         public int Index { get; set; }
         public string ID { get; set; }
         
-        public MNRecipient Recipient { get; set; }
+        public IRecipient Recipient { get; set; }
         public string FromName { get; set; }
         public string FromAddr { get; set; }
         public string Subject { get; set; }
