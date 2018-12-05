@@ -16,3 +16,8 @@ F:\Github\CFSocket\CFS.NET\bin\Debug\CFS.NET.pdb
 F:\Github\CFSocket\CFS.NET\obj\Debug\CFS.NET.csproj.CoreCompileInputs.cache
 F:\Github\CFSocket\CFS.NET\obj\Debug\CFS.NET.dll
 F:\Github\CFSocket\CFS.NET\obj\Debug\CFS.NET.pdb
+C:\Users\Stephen\Documents\My Project\CFS\CFS.NET\bin\Debug\CFS.NET.dll
+C:\Users\Stephen\Documents\My Project\CFS\CFS.NET\bin\Debug\CFS.NET.pdb
+C:\Users\Stephen\Documents\My Project\CFS\CFS.NET\obj\Debug\CFS.NET.csproj.CoreCompileInputs.cache
+C:\Users\Stephen\Documents\My Project\CFS\CFS.NET\obj\Debug\CFS.NET.dll
+C:\Users\Stephen\Documents\My Project\CFS\CFS.NET\obj\Debug\CFS.NET.pdb

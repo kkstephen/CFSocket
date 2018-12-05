@@ -1,0 +1,9 @@
+C:\Users\Stephen\Documents\My Project\CFS\CFS.SMTP\bin\Release\CFS.SMTP.dll
+C:\Users\Stephen\Documents\My Project\CFS\CFS.SMTP\bin\Release\CFS.SMTP.pdb
+C:\Users\Stephen\Documents\My Project\CFS\CFS.SMTP\bin\Release\CFS.NET.dll
+C:\Users\Stephen\Documents\My Project\CFS\CFS.SMTP\bin\Release\CFS.NET.pdb
+C:\Users\Stephen\Documents\My Project\CFS\CFS.SMTP\obj\Release\CFS.SMTP.csprojAssemblyReference.cache
+C:\Users\Stephen\Documents\My Project\CFS\CFS.SMTP\obj\Release\CFS.SMTP.csproj.CoreCompileInputs.cache
+C:\Users\Stephen\Documents\My Project\CFS\CFS.SMTP\obj\Release\CFS.SMTP.csproj.CopyComplete
+C:\Users\Stephen\Documents\My Project\CFS\CFS.SMTP\obj\Release\CFS.SMTP.dll
+C:\Users\Stephen\Documents\My Project\CFS\CFS.SMTP\obj\Release\CFS.SMTP.pdb

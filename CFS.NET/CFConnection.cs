@@ -93,9 +93,9 @@ namespace CFS.Net
 
         public virtual void Connect()
         {
-            IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(this.Host), this.Port);
+            //IPEndPoint remoteEP = new IPEndPoint(IPAddress.Parse(this.Host), this.Port);
 
-            var iasr = this.Socket.BeginConnect(remoteEP, null, null);
+            var iasr = this.Socket.BeginConnect(this.Host, this.Port, null, null);
 
             iasr.AsyncWaitHandle.WaitOne(this.Timeout * 1000);
 
