@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Net;
+using System.Threading.Tasks;
 using System.Net.Sockets;
 
 namespace CFS.Net
@@ -80,11 +80,36 @@ namespace CFS.Net
             throw new IOException("Network stream can not to read data");
         }
 
+        public async Task<string> ReadLineAsync()
+        {
+            if (this._netStream.CanRead)
+            {
+                return await this._sr.ReadLineAsync();
+            }
+
+            throw new IOException("Network stream can not to read data");
+        }
+
         public void Write(string data)
         {
             if (this._netStream.CanWrite)
             {
                 this._sw.Write(data);
+
+                this._sw.Flush();
+            }
+            else
+            {
+                throw new IOException("Network stream can not to send data");
+            }
+        }
+
+        public async Task WriteAsync(string data)
+        {
+            if (this._netStream.CanWrite)
+            {
+                await this._sw.WriteAsync(data);
+
                 this._sw.Flush();
             }
             else
@@ -96,6 +121,11 @@ namespace CFS.Net
         public void WriteLine(string data)
         {
             this.Write(data + CRLF);
+        }
+
+        public async Task WriteLineAsync(string data)
+        {
+            await this.WriteAsync(data + CRLF);
         }
     }
 }

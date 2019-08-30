@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Net;
+using System.Threading.Tasks;
 
 namespace CFS.Net
 {
@@ -11,7 +11,6 @@ namespace CFS.Net
         int Port { get; }
                
         void Start(); 
-        void Begin(); 
         void End();
         void Abort();
     } 

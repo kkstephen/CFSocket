@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Net;
+using System.Threading.Tasks;
 using System.Net.Sockets;
 
 namespace CFS.Net
@@ -158,7 +158,20 @@ namespace CFS.Net
             {
                 OnSend(this, new SessionDataEventArgs(data.Length));
             }           
-        } 
+        }
+
+        public virtual async Task SendAsync(string data)
+        {
+            if (this.m_closed)
+                throw new Exception("Connection closed.");
+
+            await this.Stream.WriteAsync(data);
+
+            if (!string.IsNullOrEmpty(data) && OnSend != null)
+            {
+                OnSend(this, new SessionDataEventArgs(data.Length));
+            }
+        }
 
         public virtual string Receive()
         {
@@ -176,6 +189,22 @@ namespace CFS.Net
             return data;
         }
 
+        public virtual async Task<string> ReceiveAsync()
+        {
+            if (this.m_closed)
+                throw new Exception("Connection closed.");
+
+            //message boundary: crlf
+            string data = await this.Stream.ReadLineAsync();
+
+            if (!string.IsNullOrEmpty(data) && OnReceived != null)
+            {
+                OnReceived(this, new SessionDataEventArgs(data.Length));
+            }
+
+            return data;
+        }
+
         public virtual void SendMessage(ICFMessage message)
         {
             string body = this.Encoder.Encode(message);
@@ -183,9 +212,23 @@ namespace CFS.Net
             this.Send(body + message.Boundary);
         }
 
+        public virtual async Task SendMessageAsync(ICFMessage message)
+        {
+            string body = this.Encoder.Encode(message);
+
+            await this.SendAsync(body + message.Boundary);
+        } 
+
         public virtual ICFMessage ReceiveMessage()
         {
             this.recv_data = this.Receive();
+
+            return this.Encoder.Decode(this.recv_data);
+        }
+
+        public virtual async Task<ICFMessage> ReceiveMessageAsync()
+        {
+            this.recv_data = await this.ReceiveAsync();
 
             return this.Encoder.Decode(this.recv_data);
         }

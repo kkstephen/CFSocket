@@ -32,27 +32,11 @@ namespace CFS.Net
             this.m_stop = false;
 
             this.Open();
-        }
-
-        public void Begin()
-        {
-            if (this.Authorize())
-            {
-                this.HandleProtocol();
-            }
-            
-            this.Close();
-        }
-
-        public abstract bool Authorize();
-
-        public abstract void HandleProtocol();
+        } 
 
         public virtual void End()
         {
             this.m_stop = true;
         }
-
-        public abstract void GetClientMessage();       
     }
 }
