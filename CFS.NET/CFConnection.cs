@@ -154,7 +154,7 @@ namespace CFS.Net
 
             this.Stream.Write(data);
 
-            if (!string.IsNullOrEmpty(data) && OnSend != null)
+            if (OnSend != null)
             {
                 OnSend(this, new SessionDataEventArgs(data.Length));
             }           
@@ -167,7 +167,7 @@ namespace CFS.Net
 
             await this.Stream.WriteAsync(data);
 
-            if (!string.IsNullOrEmpty(data) && OnSend != null)
+            if (OnSend != null)
             {
                 OnSend(this, new SessionDataEventArgs(data.Length));
             }
@@ -181,7 +181,7 @@ namespace CFS.Net
             //message boundary: crlf
             string data = this.Stream.ReadLine();
              
-            if (!string.IsNullOrEmpty(data) && OnReceived != null)
+            if (OnReceived != null)
             {
                 OnReceived(this, new SessionDataEventArgs(data.Length));
             } 
@@ -197,7 +197,7 @@ namespace CFS.Net
             //message boundary: crlf
             string data = await this.Stream.ReadLineAsync();
 
-            if (!string.IsNullOrEmpty(data) && OnReceived != null)
+            if (OnReceived != null)
             {
                 OnReceived(this, new SessionDataEventArgs(data.Length));
             }
