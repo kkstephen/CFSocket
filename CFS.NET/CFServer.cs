@@ -106,13 +106,13 @@ namespace CFS.Net
             try
             {     
                 while (!this.m_stop)
-                {               
+                {  
                     var socket = await this.m_listener.AcceptSocketAsync();
 
                     if (OnConnect != null)
                     {
                         OnConnect(this, new ClientConnectEventArgs(socket));
-                    }
+                    }                    
                 }
             }
             catch
